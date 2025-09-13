@@ -47,6 +47,15 @@ export const educationType = defineType({
             validation: Rule => Rule.required()
         }),
         defineField({
+            name: "url",
+            title: "Institution Website URL",
+            type: "url",
+            description: "Optional: Link to the institution's website",
+            validation: Rule => Rule.uri({
+                scheme: ['http', 'https']
+            })
+        }),
+        defineField({
             name: "orderRank",
             title: "Order Rank",
             type: "string",

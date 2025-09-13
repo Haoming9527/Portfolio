@@ -9,21 +9,21 @@ interface CertificatesClientProps {
 }
 
 export default function CertificatesClient({ certificates }: CertificatesClientProps) {
-  const [activeTag, setActiveTag] = useState<string>("General");
-  const [filteredData, setFilteredData] = useState<Certificate[]>(
-    certificates.filter(cert => (cert.tags || ["General"]).includes("General"))
-  );
+  const [activeTag, setActiveTag] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredData, setFilteredData] = useState<Certificate[]>(certificates);
   const [modalImage, setModalImage] = useState<string>("");
   const [modalAlt, setModalAlt] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Define the order of tags 
-  const tagOrder = ["General", "Programming & IT", "Cybersecurity"];
+  const tagOrder = ["All", "Programming", "Design", "IT", "Cybersecurity", "AI", "FinTech", "Hackathon", "Leadership", "Others"];
   
   // Collect all unique tags from the certificates and sort them according to the defined order
-  const allTags = Array.from(
+  const allTags = ["All", ...Array.from(
     new Set(
-      certificates.flatMap(cert => cert.tags || ["General"])
+      certificates.flatMap(cert => cert.tags || [])
     )
   ).sort((a, b) => {
     const aIndex = tagOrder.indexOf(a);
@@ -40,22 +40,43 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
     
     // If neither tag is in the order array, sort alphabetically
     return a.localeCompare(b);
-  });
+  })];
+
+  // Filter certificates based on tag and search query
+  const filterCertificates = (tag: string, query: string) => {
+    let filtered = certificates;
+    
+    // Filter by tag
+    if (tag !== "All") {
+      filtered = filtered.filter((cert: Certificate) => 
+        (cert.tags || []).includes(tag)
+      );
+    }
+    
+    // Filter by search query
+    if (query.trim()) {
+      filtered = filtered.filter((cert: Certificate) => 
+        (cert.title?.toLowerCase().includes(query.toLowerCase()) || false) ||
+        (cert.description?.toLowerCase().includes(query.toLowerCase()) || false)
+      );
+    }
+    
+    return filtered;
+  };
 
   // Handle tag filtering
   const handleTagClick = (tag: string) => {
     setActiveTag(tag);
-    if (tag === "General") {
-      const generalCerts = certificates.filter((cert: Certificate) => 
-        (cert.tags || ["General"]).includes("General")
-      );
-      setFilteredData(generalCerts);
-    } else {
-      const filteredCerts = certificates.filter((cert: Certificate) => 
-        (cert.tags || []).includes(tag)
-      );
-      setFilteredData(filteredCerts);
-    }
+    const filtered = filterCertificates(tag, searchQuery);
+    setFilteredData(filtered);
+    setIsFilterOpen(false); // Close mobile filter menu
+  };
+
+  // Handle search input
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    const filtered = filterCertificates(activeTag, query);
+    setFilteredData(filtered);
   };
 
   // Handle certificate card click
@@ -74,22 +95,104 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
 
   return (
     <>
-      {/* Tag Filter */}
-      <div className="flex flex-wrap justify-center gap-3 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
-        {allTags.map((tag) => (
-          <button
-            key={tag}
-            onClick={() => handleTagClick(tag)}
-            className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 border-2 text-sm ${
-              activeTag === tag
-                ? "bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white border-transparent shadow-lg"
-                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500"
-            }`}
-          >
-            {tag}
-          </button>
-        ))}
+      {/* Filter Section */}
+      <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+
+        {/* Desktop Search Bar */}
+        <div className="hidden sm:block mb-8">
+          <div className="max-w-lg mx-auto">
+            <div className="relative group p-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 rounded-2xl hover:from-blue-500/30 hover:via-purple-500/30 hover:to-indigo-500/30 transition-all duration-300">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder={`Search in ${activeTag === "All" ? "all certificates" : activeTag}...`}
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="block w-full pl-12 pr-4 py-3 border-0 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-base font-medium"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Filter */}
+        <div className="hidden sm:block">
+          <div className="flex flex-wrap justify-center gap-3">
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => handleTagClick(tag)}
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 border-2 text-sm ${
+                  activeTag === tag
+                    ? "bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white border-transparent shadow-lg"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+
       </div>
+
+      {/* Mobile Search Bar and Filter */}
+      <div className="sm:hidden flex items-center gap-3 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+        {/* Mobile Filter Button */}
+        <button
+          onClick={() => setIsFilterOpen(!isFilterOpen)}
+          className="flex items-center justify-center gap-1 w-12 h-10 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 border-2 border-transparent"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          <svg className={`w-3 h-3 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {/* Mobile Search Bar */}
+        <div className="flex-1 max-w-md">
+          <div className="relative group p-0.5 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 rounded-xl hover:from-blue-500/30 hover:via-purple-500/30 hover:to-indigo-500/30 transition-all duration-300">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder={`Search in ${activeTag === "All" ? "all certificates" : activeTag}...`}
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2.5 border-0 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-sm font-medium"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Filter Dropdown */}
+      {isFilterOpen && (
+        <div className="sm:hidden bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-lg mb-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="flex flex-wrap justify-center gap-3">
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => handleTagClick(tag)}
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 border-2 text-sm ${
+                  activeTag === tag
+                    ? "bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white border-transparent shadow-lg"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       
       <div className="grid md:grid-cols-3 gap-8 grid-cols-1">
         {filteredData.map((cert, index) => (
@@ -99,13 +202,13 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
              className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-4 duration-500 cursor-pointer"
              style={{ animationDelay: `${index * 100}ms` }}
            >
-            <div className="aspect-[4/3] overflow-hidden rounded-2xl relative mb-6">
+            <div className="aspect-[3/4] md:aspect-[4/3] overflow-hidden rounded-2xl relative mb-6 bg-gray-50 dark:bg-gray-800">
               {cert.imageUrl ? (
                 <Image
                   src={cert.imageUrl}
                   alt={cert.title || "Certificate Image"}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-2xl"
+                  className="object-contain group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-2xl"
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl flex items-center justify-center">
@@ -126,10 +229,7 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
               <h2 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                 {cert.title}
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3">
-                {cert.description}
-              </p>
-              <div className="flex flex-wrap gap-2 pt-2">
+              <div className="flex flex-wrap gap-2">
                 {cert.tags?.map((tag, index) => (
                   <span
                     key={index}
@@ -139,6 +239,9 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
                   </span>
                 ))}
               </div>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3">
+                {cert.description}
+              </p>
             </div>
           </div>
         ))}

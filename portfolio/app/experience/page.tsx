@@ -9,6 +9,7 @@ async function getEducationData() {
     period,
     description,
     color,
+    url,
     logo,
     "logoUrl": logo.asset->url
   }`;
@@ -24,6 +25,7 @@ async function getExperienceData() {
     organization,
     period,
     description,
+    url,
     logo,
     "logoUrl": logo.asset->url
   }`;

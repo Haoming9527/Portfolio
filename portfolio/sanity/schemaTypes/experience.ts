@@ -37,6 +37,15 @@ export const experienceType = defineType({
             validation: Rule => Rule.required()
         }),
         defineField({
+            name: "url",
+            title: "Organization Website URL",
+            type: "url",
+            description: "Optional: Link to the organization's website",
+            validation: Rule => Rule.uri({
+                scheme: ['http', 'https']
+            })
+        }),
+        defineField({
             name: "orderRank",
             title: "Order Rank",
             type: "string",

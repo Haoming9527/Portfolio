@@ -21,6 +21,7 @@ export interface Education {
   period: string;
   description: string;
   color: string;
+  url?: string;
   logo: {
     asset: {
       url: string;
@@ -35,6 +36,7 @@ export interface Experience {
   organization: string;
   period: string;
   description: string;
+  url?: string;
   logo: {
     asset: {
       url: string;

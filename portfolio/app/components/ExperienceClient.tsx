@@ -85,16 +85,33 @@ export function ExperienceClient({ educationData, experienceData }: ExperiencePr
                     <div className="ml-12 p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
                         <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 p-1">
-                            <img
-                              src={item.logoUrl}
-                              alt={`${item.title} logo`}
-                              className="w-full h-full object-contain"
-                            />
+                          {item.url ? (
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 p-1 hover:bg-gray-100 transition-colors duration-200 group"
+                            >
+                              <img
+                                src={item.logoUrl}
+                                alt={`${item.title} logo`}
+                                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
+                              />
+                            </a>
+                          ) : (
+                            <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 p-1">
+                              <img
+                                src={item.logoUrl}
+                                alt={`${item.title} logo`}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                              {item.title}
+                            </h3>
                           </div>
-                          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                            {item.title}
-                          </h3>
                         </div>
                         <span
                           className={`text-sm font-medium px-3 py-1 rounded-full mt-3 sm:mt-0 ${colors.bgLight} ${colors.bgDark} ${colors.text} ${colors.textDark}`}
@@ -129,13 +146,28 @@ export function ExperienceClient({ educationData, experienceData }: ExperiencePr
                   >
                     <div className="mb-4">
                       <div className="flex items-center gap-4 mb-3">
-                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
-                          <img
-                            src={item.logoUrl}
-                            alt={`${item.organization} logo`}
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
+                        {item.url ? (
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 group"
+                          >
+                            <img
+                              src={item.logoUrl}
+                              alt={`${item.organization} logo`}
+                              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
+                            />
+                          </a>
+                        ) : (
+                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
+                            <img
+                              src={item.logoUrl}
+                              alt={`${item.organization} logo`}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                             {item.organization}
