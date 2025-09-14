@@ -180,11 +180,11 @@ export function ExperienceClient({ educationData, experienceData }: ExperiencePr
             </div>
 
             {experienceData.length > 0 ? (
-              <div className="grid md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 justify-items-center md:justify-items-stretch">
                 {experienceData.map((item, index) => (
                   <div
                     key={item._id}
-                    className="group relative animate-in fade-in slide-in-from-bottom-4 duration-500"
+                    className="group relative animate-in fade-in slide-in-from-bottom-4 duration-500 w-full max-w-sm md:max-w-none"
                     style={{ animationDelay: `${index * 150}ms` }}
                   >
                      {item.url ? (
