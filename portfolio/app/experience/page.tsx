@@ -1,6 +1,10 @@
 import { ExperienceClient } from "@/app/components/ExperienceClient";
-import { Education, Experience as ExperienceType } from "../lib/interface";
 import { client } from "../lib/sanity";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Experience",
+};
 
 async function getEducationData() {
   const query = `*[_type == 'education'] | order(orderRank asc) {

@@ -8,6 +8,11 @@ import prisma from "@/app/lib/db";
 import logger from "@/app/lib/logger";
 import { MessageSquare, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Guestbook",
+};
 
 async function getGuestBookEntries() {
   noStore();

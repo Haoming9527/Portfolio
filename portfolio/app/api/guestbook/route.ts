@@ -115,11 +115,6 @@ export async function POST(req: NextRequest) {
             profileimage: user.picture || '',
           },
         });
-        logger.info('Multi-provider authentication in guestbook - updated profile', { 
-          existingUserId: existingUser.id, 
-          newUserId: user.id, 
-          email: user.email 
-        });
       } else {
         dbUser = await prisma.user.create({
           data: {

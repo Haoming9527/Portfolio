@@ -1,6 +1,11 @@
 import { Certificate } from "../lib/interface";
 import { client } from "../lib/sanity";
 import CertificatesClient from "../components/CertificatesClient";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Certificates",
+};
 
 async function getData() {
   const query = `*[_type == 'certificate'] | order(orderRank asc) {

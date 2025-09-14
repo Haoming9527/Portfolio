@@ -56,11 +56,6 @@ export async function GET() {
         },
       });
       
-      logger.info('Multi-provider authentication detected and updated', { 
-        existingUserId: existingUserByEmail.id, 
-        newUserId: user.id, 
-        email: user.email 
-      });
     } else {
       dbUser = await prisma.user.create({
         data: {
