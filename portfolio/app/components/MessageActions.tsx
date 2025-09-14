@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Trash2, X, Check } from "lucide-react";
-import { useState } from "react";
+import { useState, memo } from "react";
 
 interface MessageActionsProps {
   messageId: string;
@@ -12,7 +12,7 @@ interface MessageActionsProps {
   currentUserId?: string;
 }
 
-export function MessageActions({ messageId, messageText, userId, currentUserId }: MessageActionsProps) {
+export const MessageActions = memo(function MessageActions({ messageId, messageText, userId, currentUserId }: MessageActionsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedMessage, setEditedMessage] = useState(messageText);
   const [isLoading, setIsLoading] = useState(false);
@@ -170,4 +170,4 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
       )}
     </div>
   );
-}
+});
