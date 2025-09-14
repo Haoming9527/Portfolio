@@ -23,61 +23,44 @@ export async function GET() {
   }
 
   try {
-    // Try to find user by ID first (most common case)
-    let dbUser = await prisma.user.findUnique({
+    const existingUserById = await prisma.user.findUnique({
       where: { id: user.id }
     });
 
-    if (dbUser) {
-      // Only update if data has changed to avoid unnecessary writes
-      const needsUpdate = 
-        dbUser.username !== username ||
-        dbUser.email !== (user.email ?? "") ||
-        dbUser.profileimage !== user.picture;
-
-      if (needsUpdate) {
-        dbUser = await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            username: username,
-            email: user.email ?? "",
-            profileimage: user.picture,
-          },
-        });
-        logger.info('User updated by ID', { userId: user.id });
-      }
-    } else if (user.email) {
-      // Only check by email if user not found by ID
-      const existingUserByEmail = await prisma.user.findUnique({
+    let existingUserByEmail = null;
+    if (user.email) {
+      existingUserByEmail = await prisma.user.findUnique({
         where: { email: user.email }
       });
+    }
 
-      if (existingUserByEmail) {
-        dbUser = await prisma.user.update({
-          where: { id: existingUserByEmail.id },
-          data: {
-            username: username,
-            email: user.email ?? "",
-            profileimage: user.picture,
-          },
-        });
-        
-        logger.info('Multi-provider authentication detected and updated', { 
-          existingUserId: existingUserByEmail.id, 
-          newUserId: user.id, 
-          email: user.email 
-        });
-      } else {
-        dbUser = await prisma.user.create({
-          data: {
-            id: user.id,
-            username: username,
-            email: user.email ?? "",
-            profileimage: user.picture,
-          },
-        });
-        logger.info('New user created', { userId: user.id, email: user.email });
-      }
+    let dbUser;
+    
+    if (existingUserById) {
+      dbUser = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          username: username,
+          email: user.email ?? "",
+          profileimage: user.picture,
+        },
+      });
+      logger.info('Existing user updated by ID', { userId: user.id });
+    } else if (existingUserByEmail) {
+      dbUser = await prisma.user.update({
+        where: { id: existingUserByEmail.id },
+        data: {
+          username: username,
+          email: user.email ?? "",
+          profileimage: user.picture,
+        },
+      });
+      
+      logger.info('Multi-provider authentication detected and updated', { 
+        existingUserId: existingUserByEmail.id, 
+        newUserId: user.id, 
+        email: user.email 
+      });
     } else {
       dbUser = await prisma.user.create({
         data: {

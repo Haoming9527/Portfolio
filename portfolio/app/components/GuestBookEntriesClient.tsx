@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "lucide-react";
 import { MessageActions } from "./MessageActions";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface GuestBookEntry {
@@ -21,89 +21,56 @@ interface GuestBookEntriesClientProps {
   entries: GuestBookEntry[];
 }
 
-/**
- * GuestBookEntriesClient - Main component for displaying guestbook messages
- * 
- * Features:
- * - Displays guestbook entries with user profiles and timestamps
- * - Handles user authentication and permission-based actions
- * - Provides real-time updates on focus/visibility changes
- * - Optimized with memoization and debounced API calls
- * - Includes loading states and error handling
- * 
- * @param entries - Initial guestbook entries from server-side rendering
- */
 export function GuestBookEntriesClient({ entries: initialEntries }: GuestBookEntriesClientProps) {
   const [entries, setEntries] = useState<GuestBookEntry[]>(initialEntries);
   const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  /**
-   * Checks user authentication status and fetches user info
-   * After successful auth, automatically fetches entries to ensure user permissions are applied
-   * Sets loading state to false when complete (success or failure)
-   */
-  const checkAuth = useCallback(async () => {
+  const fetchEntries = async () => {
+    try {
+      const response = await fetch("/api/guestbook");
+      if (response.ok) {
+        const data = await response.json();
+        setEntries(data);
+      }
+    } catch (error) {
+      console.error("Error fetching entries:", error);
+    }
+  };
+
+  const checkAuth = async () => {
     try {
       const response = await fetch("/api/guestbook/user-info");
       if (response.ok) {
         const userData = await response.json();
         setCurrentUserId(userData.id);
-        // Fetch entries after auth is complete
-        const entriesResponse = await fetch("/api/guestbook");
-        if (entriesResponse.ok) {
-          const entriesData = await entriesResponse.json();
-          setEntries(entriesData);
-        }
+        await fetchEntries();
       }
     } catch (error) {
       console.error("Error checking auth:", error);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
-  /**
-   * Refreshes both authentication and entries data with debouncing
-   * Prevents excessive API calls by debouncing requests with 300ms delay
-   * Uses parallel execution for refreshes since auth is already established
-   */
-  const refreshData = useCallback(async () => {
-    if (refreshTimeoutRef.current) {
-      clearTimeout(refreshTimeoutRef.current);
-    }
+  const refreshData = async () => {
+    setIsRefreshing(true);
+    await Promise.all([fetchEntries(), checkAuth()]);
+    setIsRefreshing(false);
+  };
 
-    refreshTimeoutRef.current = setTimeout(async () => {
-      setIsRefreshing(true);
-      await checkAuth();
-      setIsRefreshing(false);
-    }, 300);
-  }, [checkAuth]);
-
-  /**
-   * Initial data loading effect
-   * Runs authentication check on component mount, which automatically fetches entries after auth completes
-   */
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+  }, []);
 
-  /**
-   * Event listeners for automatic data refresh
-   * Listens for window focus and visibility changes to refresh data when user returns to the tab
-   * Includes cleanup for event listeners and timeout to prevent memory leaks
-   */
   useEffect(() => {
     const handleFocus = () => {
-      if (!isRefreshing) {
-        refreshData();
-      }
+      refreshData();
     };
 
     const handleVisibilityChange = () => {
-      if (!document.hidden && !isRefreshing) {
+      if (!document.hidden) {
         refreshData();
       }
     };
@@ -114,13 +81,9 @@ export function GuestBookEntriesClient({ entries: initialEntries }: GuestBookEnt
     return () => {
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (refreshTimeoutRef.current) {
-        clearTimeout(refreshTimeoutRef.current);
-      }
     };
-  }, [refreshData]);
+  }, []);
 
-  // Loading state - displays skeleton placeholders while data is being fetched
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -138,7 +101,6 @@ export function GuestBookEntriesClient({ entries: initialEntries }: GuestBookEnt
     );
   }
 
-  // Empty state - displays when no guestbook entries exist
   if (entries.length === 0) {
     return (
       <div className="text-center py-12">
@@ -149,7 +111,6 @@ export function GuestBookEntriesClient({ entries: initialEntries }: GuestBookEnt
     );
   }
 
-  // Main render - displays guestbook entries with user profiles and action buttons
   return (
     <div className="space-y-4">
       {isRefreshing && (
@@ -161,10 +122,8 @@ export function GuestBookEntriesClient({ entries: initialEntries }: GuestBookEnt
         <div key={item.id} className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
           <img
             src={item.user?.profileimage || "/default.png"}
-            alt={`${item.user?.username || 'Anonymous'}'s profile`}
+            alt={`${item.user?.username}'s profile`}
             className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-muted"
-            loading="lazy"
-            decoding="async"
           />
           
           <div className="flex-1 min-w-0">
