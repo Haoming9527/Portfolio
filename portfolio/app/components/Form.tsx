@@ -17,6 +17,7 @@ export function Form() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<{ id: string; email?: string; given_name?: string; family_name?: string; picture?: string; username?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>("");
 
   const checkAuth = async () => {
     try {
@@ -63,8 +64,6 @@ export function Form() {
     setError(null);
     
     try {
-      const message = formData.get("message") as string;
-      
       const response = await fetch("/api/guestbook", {
         method: "POST",
         headers: {
@@ -75,6 +74,7 @@ export function Form() {
 
       if (response.ok) {
         formRef.current?.reset();
+        setMessage("");
         window.location.reload();
       } else if (response.status === 401) {
         window.location.href = '/api/auth/login';
@@ -171,14 +171,15 @@ export function Form() {
             <Textarea
               id="message"
               name="message"
-              maxLength={500}
-              minLength={1}
               placeholder="Your Message..."
               required
               rows={4}
               className="resize-none"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             />
             <div className="text-xs text-muted-foreground text-right">
+              {message.length}/500 characters
             </div>
           </div>
 
