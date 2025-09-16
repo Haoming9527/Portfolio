@@ -126,7 +126,7 @@ export function GuestBookEntriesClient({ entries: initialEntries }: GuestBookEnt
             className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-muted"
           />
           
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-1">
               <span className="font-semibold text-foreground">
                 {item.user?.username || 'Anonymous'}
@@ -136,7 +136,7 @@ export function GuestBookEntriesClient({ entries: initialEntries }: GuestBookEnt
                 {new Date(item.createdAt).toLocaleDateString()}
               </Badge>
             </div>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-muted-foreground leading-relaxed break-words whitespace-pre-wrap overflow-wrap-anywhere">
               {item.message}
             </p>
             
