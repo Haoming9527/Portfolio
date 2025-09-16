@@ -11,6 +11,7 @@ import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components
 
 export function Form() {
   const formRef = useRef<HTMLFormElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isSubmittingRef = useRef(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,6 +40,28 @@ export function Form() {
       setIsLoading(false);
     }
   };
+
+  // Auto-resize textarea based on content
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [message]);
+
+  // Handle window resize for responsive height adjustment
+  useEffect(() => {
+    const handleResize = () => {
+      adjustTextareaHeight();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     checkAuth();
@@ -155,12 +178,6 @@ export function Form() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-            {error}
-          </div>
-        )}
-        
         <form
           ref={formRef}
           action={handleSubmit}
@@ -169,18 +186,23 @@ export function Form() {
           <div className="space-y-2">
             <Label htmlFor="message" className="mb-1">Message</Label>
             <Textarea
+              ref={textareaRef}
               id="message"
               name="message"
               placeholder="Your Message..."
               required
-              rows={4}
-              className="resize-none"
+              className="resize-none break-words whitespace-pre-wrap overflow-wrap-anywhere min-h-[80px] overflow-hidden mt-2"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
             <div className="text-xs text-muted-foreground text-right">
               {message.length}/500 characters
             </div>
+            {error && (
+              <div className="text-sm text-red-600">
+                {error}
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end">

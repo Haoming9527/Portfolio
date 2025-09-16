@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Trash2, X, Check } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface MessageActionsProps {
   messageId: string;
@@ -17,8 +17,33 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
   const [editedMessage, setEditedMessage] = useState(messageText);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isOwner = currentUserId === userId;
+
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing) {
+      adjustTextareaHeight();
+    }
+  }, [isEditing, editedMessage]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (isEditing) {
+        adjustTextareaHeight();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isEditing]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -33,11 +58,6 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
   };
 
   const handleSaveEdit = async () => {
-    if (!editedMessage.trim()) {
-      setError("Message cannot be empty");
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
@@ -47,7 +67,7 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: editedMessage.trim() }),
+        body: JSON.stringify({ message: editedMessage }),
       });
 
       if (response.ok) {
@@ -59,7 +79,8 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
       } else if (response.status === 404) {
         setError("Message not found");
       } else {
-        setError("Failed to update message");
+        const errorData = await response.json();
+        setError(errorData.error || "Failed to update message");
       }
     } catch (error) {
       setError("Failed to update message");
@@ -105,14 +126,18 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
   if (isEditing) {
     return (
       <div className="space-y-2 mt-2">
-        <Textarea
-          value={editedMessage}
-          onChange={(e) => setEditedMessage(e.target.value)}
-          className="resize-none"
-          maxLength={500}
-          rows={3}
-          disabled={isLoading}
-        />
+        <div className="space-y-1">
+          <Textarea
+            ref={textareaRef}
+            value={editedMessage}
+            onChange={(e) => setEditedMessage(e.target.value)}
+            className="resize-none break-words whitespace-pre-wrap overflow-wrap-anywhere min-h-[80px] overflow-hidden focus:outline-none focus:ring-inset"
+            disabled={isLoading}
+          />
+          <div className="text-xs text-muted-foreground text-right">
+            {editedMessage.length}/500 characters
+          </div>
+        </div>
         <div className="flex items-center gap-2">
           <Button
             size="sm"
