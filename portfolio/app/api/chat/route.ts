@@ -15,7 +15,14 @@ async function getKnowledgeBase() {
   return data;
 }
 
-function formatKnowledgeBase(docs: any[]) {
+type KnowledgeBaseDoc =
+  | { _type: "project"; title: string; description: string }
+  | { _type: "technology"; name: string }
+  | { _type: "experience"; title: string; organization: string; period: string; description: string }
+  | { _type: "education"; title: string; period: string; description: string }
+  | { _type: "certificate"; title: string; description: string };
+
+function formatKnowledgeBase(docs: KnowledgeBaseDoc[]): string {
   return docs
     .map((doc) => {
       switch (doc._type) {
@@ -85,10 +92,11 @@ export async function POST(req: Request) {
     let reply = result?.response?.text() || "No reply";
     reply = trimTo100Words(reply);
     return NextResponse.json({ reply });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Gemini error:", err);
+    const message = err instanceof Error ? err.message : "Gemini server error";
     return NextResponse.json(
-      { error: { message: err.message || "Gemini server error" } },
+      { error: { message } },
       { status: 500 }
     );
   }

@@ -2,19 +2,24 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+
+type Message = { role: "user" | "assistant"; content: string };
 
 export function Chat() {
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [open, setOpen] = useState(false);
   const [spinning, setSpinning] = useState(false);
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // Scroll to bottom when messages change
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, open, loading]);
+  }, [messages.length, open, loading]);
 
+  // Initial greeting
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([{ role: "assistant", content: "Hello! How may I help you?" }]);
@@ -32,7 +37,8 @@ export function Chat() {
   const sendMessage = async () => {
     const trimmedInput = input.trim();
     if (!trimmedInput) return;
-    const userMessage = { role: "user", content: input };
+
+    const userMessage: Message = { role: "user", content: trimmedInput };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
@@ -41,18 +47,21 @@ export function Chat() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: trimmedInput }),
       });
+
       const data = await res.json();
-      const botMessage = data.error ? data.error.message || "An error occurred." : data.reply || "No reply";
+      const botMessageContent = data.error ? data.error.message || "An error occurred." : data.reply || "No reply";
+
       setMessages((prev) => [
         ...prev.filter((m) => m.role !== "assistant" || m.content !== ""),
-        { role: "assistant", content: botMessage },
+        { role: "assistant", content: botMessageContent },
       ]);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error occurred";
       setMessages((prev) => [
         ...prev.filter((m) => m.role !== "assistant" || m.content !== ""),
-        { role: "assistant", content: err.message || "Error occurred" },
+        { role: "assistant", content: message },
       ]);
     } finally {
       setLoading(false);
@@ -62,18 +71,18 @@ export function Chat() {
   return (
     <div>
       {open && (
-        <div className="fixed bottom-36 left-4 sm:left-6 md:left-8 z-50 bg-white dark:bg-gray-900 shadow-lg rounded-2xl flex flex-col animate-in fade-in slide-in-from-top-4 duration-700
-                        w-[70vw] sm:w-64 md:w-72 lg:w-80
-                        max-h-[60vh] sm:max-h-[320px] md:max-h-[360px] lg:max-h-[400px]">
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800 rounded-2xl">
+        <Card className="fixed bottom-36 left-4 sm:left-6 md:left-8 z-50 w-[70vw] sm:w-64 md:w-72 lg:w-80 max-h-[60vh] sm:max-h-[320px] md:max-h-[360px] lg:max-h-[400px] flex flex-col animate-in fade-in slide-in-from-top-4 duration-700 overflow-hidden">
+          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
             {messages.map((m, i) => (
               <div key={i} className={`flex items-end ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 {m.role === "assistant" && <span className="mr-2 text-2xl">🤖</span>}
-                <div className={`px-3 py-2 rounded-xl break-words max-w-[85%] ${
-                  m.role === "user"
-                    ? "bg-blue-500 text-white rounded-br-none"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
-                }`}>
+                <div
+                  className={`px-3 py-2 rounded-xl break-words max-w-[85%] ${
+                    m.role === "user"
+                      ? "bg-blue-500 text-white rounded-br-none"
+                      : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
+                  }`}
+                >
                   {m.content}
                 </div>
               </div>
@@ -85,8 +94,9 @@ export function Chat() {
               </div>
             )}
             <div ref={chatEndRef} />
-          </div>
-          <div className="flex p-2 border-t border-gray-300 dark:border-gray-700">
+          </CardContent>
+
+          <CardFooter className="flex p-2 border-t border-gray-300 dark:border-gray-700">
             <input
               className="flex-1 p-2 border rounded-lg dark:bg-gray-800 dark:text-white"
               value={input}
@@ -103,8 +113,8 @@ export function Chat() {
             >
               Send
             </button>
-          </div>
-        </div>
+          </CardFooter>
+        </Card>
       )}
 
       <button
