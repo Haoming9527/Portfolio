@@ -14,12 +14,10 @@ export function Chat() {
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length, open, loading]);
 
-  // Initial greeting
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([{ role: "assistant", content: "Hello! How may I help you?" }]);
@@ -71,7 +69,7 @@ export function Chat() {
   return (
     <div>
       {open && (
-        <Card className="fixed bottom-36 left-4 sm:left-6 md:left-8 z-50 w-[70vw] sm:w-64 md:w-72 lg:w-80 max-h-[60vh] sm:max-h-[320px] md:max-h-[360px] lg:max-h-[400px] flex flex-col animate-in fade-in slide-in-from-top-4 duration-700 overflow-hidden">
+        <Card className="fixed bottom-36 left-4 sm:left-6 md:left-8 z-50 w-[90vw] sm:w-64 md:w-72 lg:w-80 max-h-[60vh] sm:max-h-[320px] md:max-h-[360px] lg:max-h-[400px] flex flex-col animate-in fade-in slide-in-from-top-4 duration-700 overflow-hidden">
           <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
             {messages.map((m, i) => (
               <div key={i} className={`flex items-end ${m.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -96,9 +94,9 @@ export function Chat() {
             <div ref={chatEndRef} />
           </CardContent>
 
-          <CardFooter className="flex p-2 border-t border-gray-300 dark:border-gray-700">
+          <CardFooter className="flex p-1 sm:p-2 border-t border-gray-300 dark:border-gray-700 gap-1">
             <input
-              className="flex-1 p-2 border rounded-lg dark:bg-gray-800 dark:text-white"
+              className="flex-1 p-2 sm:p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm sm:text-base"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message..."
@@ -107,7 +105,7 @@ export function Chat() {
               }}
             />
             <button
-              className="ml-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors duration-200 disabled:opacity-50"
+              className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-3 sm:px-4 py-2 sm:py-2 rounded-lg transition-colors duration-200 disabled:opacity-50"
               onClick={sendMessage}
               disabled={input.trim() === ""}
             >
