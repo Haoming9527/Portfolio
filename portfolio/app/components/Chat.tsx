@@ -30,7 +30,8 @@ export function Chat() {
   };
 
   const sendMessage = async () => {
-    if (!input) return;
+    const trimmedInput = input.trim();
+    if (!trimmedInput) return;
     const userMessage = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -85,18 +86,20 @@ export function Chat() {
             )}
             <div ref={chatEndRef} />
           </div>
-
           <div className="flex p-2 border-t border-gray-300 dark:border-gray-700">
             <input
               className="flex-1 p-2 border rounded-lg dark:bg-gray-800 dark:text-white"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message..."
-              onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && input.trim() !== "") sendMessage();
+              }}
             />
             <button
-              className="ml-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+              className="ml-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors duration-200 disabled:opacity-50"
               onClick={sendMessage}
+              disabled={input.trim() === ""}
             >
               Send
             </button>
