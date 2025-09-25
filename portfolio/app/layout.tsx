@@ -5,6 +5,7 @@ import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { BackToTop } from "./components/BackToTop";
+import { Chat } from "./components/Chat";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <BackToTop />
+          <Chat />
         </ThemeProvider>
       </body>
     </html>

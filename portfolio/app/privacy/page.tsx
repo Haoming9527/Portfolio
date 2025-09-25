@@ -26,8 +26,7 @@ export default function Privacy() {
             <h2 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Personal Data We Collect</h2>
             <p className="text-gray-700 dark:text-gray-300">
               In compliance with Singapore&apos;s PDPA, this portfolio website collects minimal personal data. 
-              We may collect information you voluntarily provide through the guestbook, as well as basic 
-              technical information for website functionality and security purposes.
+              We may also collect data from interactions with website features, including chat or messaging functions, to provide and improve these services.
             </p>
           </section>
 
@@ -60,6 +59,7 @@ export default function Privacy() {
               <li><strong><a href="https://docs.kinde.com/trust-center/privacy-and-compliance/privacy-policy/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Kinde Auth</a></strong> - For user authentication in the guestbook</li>
               <li><strong><a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Supabase</a></strong> - For database hosting and data storage</li>
               <li><strong><a href="https://www.prisma.io/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Prisma</a></strong> - For database operations</li>
+              <li><strong><a href="https://developers.google.com/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Google Gemini API</a></strong> - Used to generate AI responses for the website chatbot</li>
             </ul>
             <p className="text-gray-700 dark:text-gray-300 mt-2">
               These services have their own privacy policies and data handling practices.

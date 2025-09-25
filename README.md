@@ -18,6 +18,7 @@ A modern, full-stack portfolio website built with Next.js 15, featuring dynamic 
 
 ### 📱 **Core Pages**
 - **Home**: Introduction, about section, and technology showcase
+- **Experience**: Professional experience and work history showcase
 - **Projects**: Dynamic project gallery with Sanity CMS integration
 - **Certificates**: Professional certifications and achievements display
 - **Guestbook**: Interactive message board with user authentication
@@ -56,7 +57,7 @@ A modern, full-stack portfolio website built with Next.js 15, featuring dynamic 
 - **ORM**: Prisma
 - **Authentication**: Kinde Auth
 - **CMS**: Sanity
-- **API**: Next.js API Routes
+- **API**: Next.js API Routes including Gemini AI endpoints
 
 ### Development Tools
 - **Package Manager**: npm
@@ -72,6 +73,7 @@ A modern, full-stack portfolio website built with Next.js 15, featuring dynamic 
 - PostgreSQL database
 - Sanity account
 - Kinde Auth account
+- Google Gemini API key
 
 ### Installation
 
@@ -105,6 +107,9 @@ A modern, full-stack portfolio website built with Next.js 15, featuring dynamic 
    NEXT_PUBLIC_SANITY_PROJECT_ID=your_sanity_project_id
    NEXT_PUBLIC_SANITY_DATASET=production
    SANITY_API_TOKEN=your_sanity_api_token
+
+   # Gemini AI
+   GEMINI_API_KEY=your_google_gemini_api_key
    ```
 
 4. **Database Setup**
