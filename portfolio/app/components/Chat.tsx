@@ -94,7 +94,7 @@ export function Chat() {
             <div ref={chatEndRef} />
           </CardContent>
 
-          <CardFooter className="flex p-1 sm:p-2 border-t border-gray-300 dark:border-gray-700 gap-1">
+          <CardFooter className="flex p-2 sm:p-3 border-t border-gray-300 dark:border-gray-700 gap-2">
             <input
               className="flex-1 p-2 sm:p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm sm:text-base"
               value={input}
@@ -105,7 +105,7 @@ export function Chat() {
               }}
             />
             <button
-              className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-3 sm:px-4 py-2 sm:py-2 rounded-lg transition-colors duration-200 disabled:opacity-50"
+              className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-3 sm:px-4 py-2 sm:py-2 rounded-lg transition-colors duration-200 disabled:opacity-50"
               onClick={sendMessage}
               disabled={input.trim() === ""}
             >
