@@ -246,28 +246,47 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
           </div>
         ))}
       </div>
-
-             {/* Certificate Image Modal */}
-       {isModalOpen && modalImage && (
-         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-           <div className="relative max-w-5xl w-full">
-                           <button 
-                onClick={closeModal}
-                className="absolute -top-10 right-0 text-white hover:text-red-400 text-2xl transition-colors" 
-                aria-label="Close large certificate view"
-              >
-                ✕
-              </button>
-                            <Image
-                 src={modalImage}
-                 alt={modalAlt || "Certificate Image"}
-                 width={1200}
-                 height={900}
-                 className="w-full h-auto max-h-[85vh] object-contain rounded-lg bg-gray-100 dark:bg-gray-800"
-               />
-           </div>
-         </div>
-       )}
+      {isModalOpen && modalImage && (
+        <div
+          className="fixed inset-0 z-[1000] flex items-start justify-center bg-black/90 backdrop-blur-sm p-4 overflow-y-auto pt-20"
+        >
+          <button
+            onClick={closeModal}
+            className="absolute top-4 right-4 z-[1010] text-white hover:text-red-400 text-3xl font-bold transition-all md:top-6 md:right-6"
+            aria-label="Close large certificate view"
+          >
+            ✕
+          </button>
+          <div
+            className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden
+                      flex flex-col md:flex-row-reverse items-stretch
+                      animate-in fade-in slide-in-from-bottom-4 duration-300
+                      mt-0 md:mt-0
+                      max-h-[85vh] sm:max-h-[80vh]"
+          >
+            <div className="w-full md:w-2/3 flex items-center justify-center bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
+              <div className="relative w-full flex items-center justify-center h-[50vh] sm:h-[60vh] md:h-[78vh]">
+                <Image
+                  src={modalImage}
+                  alt={modalAlt || 'Certificate Image'}
+                  width={1200}
+                  height={900}
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-md transition-transform duration-300"
+                  priority
+                />
+              </div>
+            </div>
+            <div className="w-full md:w-1/3 p-4 sm:p-6 md:p-10 flex flex-col justify-center text-center md:text-left overflow-y-auto max-h-[50vh] sm:max-h-[60vh] md:max-h-[70vh]">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+                {modalAlt}
+              </h2>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base md:text-lg">
+                {filteredData.find(cert => cert.title === modalAlt)?.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
      </>
    );
  }
