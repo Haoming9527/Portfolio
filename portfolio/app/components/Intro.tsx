@@ -11,7 +11,7 @@ export function Intro() {
         className="col-span-1 lg:col-span-1 h-[300px] lg:h-[500px] object-cover rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200/50 dark:border-blue-700/50 order-1 lg:order-2"
         priority
       />
-      <Card className="col-span-1 lg:col-span-2 h-full bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 min-h-[400px] lg:min-h-[300px] border border-blue-200/50 dark:border-blue-700/50 order-2 lg:order-1">
+      <Card className="col-span-1 lg:col-span-2 h-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-950/20 dark:to-purple-950/20 min-h-[400px] lg:min-h-[300px] border border-blue-200/50 dark:border-blue-700/50 order-2 lg:order-1">
         <CardContent className="p-6 lg:p-8">
           <div className="max-w-lg">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent" style={{

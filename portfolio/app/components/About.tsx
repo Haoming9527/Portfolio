@@ -28,7 +28,7 @@ export function About() {
 
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6">
+            <div className="bg-gradient-to-br from-indigo-100 to-purple-200 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">What I Do</h3>
               <ul className="text-gray-600 dark:text-gray-300 space-y-2">
                 <li>• Full-stack web development</li>
@@ -37,7 +37,7 @@ export function About() {
                 <li>• Database Management</li>
               </ul>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-cyan-50 dark:from-green-900/20 dark:to-cyan-900/20 rounded-lg p-6">
+            <div className="bg-gradient-to-br from-green-100 to-teal-100 dark:from-green-900/20 dark:to-cyan-900/20 rounded-lg p-6">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">My Interests</h3>
               <ul className="text-gray-600 dark:text-gray-300 space-y-2">
                 <li>• Learning new technologies</li>
