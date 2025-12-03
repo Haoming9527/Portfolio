@@ -81,7 +81,6 @@ A modern, full-stack portfolio website built with Next.js 15, featuring dynamic 
    ```bash
    git clone https://github.com/Haoming9527/Portfolio
    cd Portfolio
-   cd portfolio
    ```
 
 2. **Install dependencies**
@@ -90,7 +89,7 @@ A modern, full-stack portfolio website built with Next.js 15, featuring dynamic 
    ```
 
 3. **Environment Setup**
-   Create a `.env.local` file in the root directory:
+   Create a `.env` file in the root directory:
    ```env
    # Database
    DATABASE_URL="postgresql://username:password@localhost:5432/portfolio"
