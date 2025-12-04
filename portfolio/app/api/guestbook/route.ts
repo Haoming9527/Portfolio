@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../lib/db";
+import { prisma } from "../../lib/db";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import logger from "../../lib/logger";

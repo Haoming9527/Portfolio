@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { unstable_noStore as noStore } from "next/cache";
 import { Form } from "../components/Form";
 import { GuestBookEntriesClient } from "../components/GuestBookEntriesClient";
-import prisma from "@/app/lib/db";
+import { prisma } from '@/app/lib/db';
 import logger from "@/app/lib/logger";
 import { MessageSquare, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
