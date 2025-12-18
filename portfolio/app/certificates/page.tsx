@@ -1,4 +1,5 @@
 import { Certificate } from "../lib/interface";
+import { Suspense } from "react";
 import { client } from "../lib/sanity";
 import CertificatesClient from "../components/CertificatesClient";
 import type { Metadata } from "next";
@@ -34,7 +35,9 @@ export default async function CertificatesPage() {
         </p>
       </div>
       
-      <CertificatesClient certificates={data} />
+      <Suspense fallback={<div className="text-center py-20 text-gray-500">Loading certificates...</div>}>
+        <CertificatesClient certificates={data} />
+      </Suspense>
     </div>
   );
 }  
