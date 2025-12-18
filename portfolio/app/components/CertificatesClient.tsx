@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Certificate } from "../lib/interface";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 interface CertificatesClientProps {
   certificates: Certificate[];
@@ -16,6 +17,11 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
   const [modalAlt, setModalAlt] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [showCopiedToast, setShowCopiedToast] = useState(false);
+
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
   // Define the order of tags 
   const tagOrder = ["All", "Programming", "Design", "IT", "Cybersecurity", "AI", "FinTech", "Hackathon", "Leadership", "Others"];
@@ -64,6 +70,22 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
     return filtered;
   };
 
+  // Check URL for certificate ID on mount and update
+  useEffect(() => {
+    const id = searchParams.get('id');
+    if (id) {
+      const cert = certificates.find(c => c._id === id);
+      if (cert) {
+        setModalImage(cert.imageUrl);
+        setModalAlt(cert.title);
+        setIsModalOpen(true);
+      }
+    } else if (isModalOpen) {
+        // If modal is open but no ID in URL (back button used), close modal
+        closeModal(); 
+    }
+  }, [searchParams, certificates]); 
+
   // Handle tag filtering
   const handleTagClick = (tag: string) => {
     setActiveTag(tag);
@@ -80,10 +102,14 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
   };
 
   // Handle certificate card click
-  const handleCertificateClick = (image: string, title: string) => {
-    setModalImage(image);
-    setModalAlt(title);
+  const handleCertificateClick = (cert: Certificate) => {
+    setModalImage(cert.imageUrl);
+    setModalAlt(cert.title);
     setIsModalOpen(true);
+    
+    const params = new URLSearchParams(searchParams);
+    params.set('id', cert._id);
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   // Close modal
@@ -91,6 +117,20 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
     setIsModalOpen(false);
     setModalImage("");
     setModalAlt("");
+    
+    const params = new URLSearchParams(searchParams);
+    params.delete('id');
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShowCopiedToast(true);
+      setTimeout(() => setShowCopiedToast(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+    }
   };
 
   return (
@@ -198,7 +238,7 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
         {filteredData.map((cert, index) => (
                      <div
              key={cert._id}
-             onClick={() => handleCertificateClick(cert.imageUrl || "", cert.title || "")}
+             onClick={() => handleCertificateClick(cert)}
              className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-4 duration-500 cursor-pointer"
              style={{ animationDelay: `${index * 100}ms` }}
            >
@@ -250,6 +290,30 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
         <div
           className="fixed inset-0 z-[1000] flex items-start justify-center bg-black/90 backdrop-blur-sm p-4 overflow-y-auto pt-20"
         >
+          <div className="absolute top-4 left-4 z-[1010] md:top-6 md:left-6">
+             <button
+               onClick={handleShare}
+               className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all duration-300"
+               title="Copy link to clipboard"
+             >
+               {showCopiedToast ? (
+                 <>
+                   <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                   </svg>
+                   <span className="text-sm font-medium text-green-400">Copied!</span>
+                 </>
+               ) : (
+                 <>
+                   <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                   </svg>
+                   <span className="text-sm font-medium">Share</span>
+                 </>
+               )}
+             </button>
+          </div>
+
           <button
             onClick={closeModal}
             className="absolute top-4 right-4 z-[1010] text-white hover:text-red-400 text-3xl font-bold transition-all md:top-6 md:right-6"
@@ -257,6 +321,7 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
           >
             ✕
           </button>
+
           <div
             className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden
                       flex flex-col md:flex-row-reverse items-stretch
