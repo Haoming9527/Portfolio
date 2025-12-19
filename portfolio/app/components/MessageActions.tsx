@@ -12,7 +12,12 @@ interface MessageActionsProps {
   currentUserId?: string;
 }
 
-export function MessageActions({ messageId, messageText, userId, currentUserId }: MessageActionsProps) {
+export function MessageActions({
+  messageId,
+  messageText,
+  userId,
+  currentUserId,
+}: MessageActionsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedMessage, setEditedMessage] = useState(messageText);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +28,7 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
 
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
@@ -41,8 +46,8 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isEditing]);
 
   const handleEdit = () => {
@@ -63,17 +68,17 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
 
     try {
       const response = await fetch(`/api/guestbook?id=${messageId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ message: editedMessage }),
       });
 
       if (response.ok) {
         setIsEditing(false);
-        // Refresh the page to show updated message
-        window.location.reload();
+        // Dispatch custom event to refresh guestbook
+        window.dispatchEvent(new CustomEvent("guestbook-updated"));
       } else if (response.status === 401) {
         setError("You are not authorized to edit this message");
       } else if (response.status === 404) {
@@ -82,7 +87,7 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
         const errorData = await response.json();
         setError(errorData.error || "Failed to update message");
       }
-    } catch (error) {
+    } catch {
       setError("Failed to update message");
     } finally {
       setIsLoading(false);
@@ -90,7 +95,11 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
   };
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this message? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this message? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
@@ -99,12 +108,12 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
 
     try {
       const response = await fetch(`/api/guestbook?id=${messageId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
-        // Refresh the page to remove the message
-        window.location.reload();
+        // Dispatch custom event to refresh guestbook
+        window.dispatchEvent(new CustomEvent("guestbook-updated"));
       } else if (response.status === 401) {
         setError("You are not authorized to delete this message");
       } else if (response.status === 404) {
@@ -112,7 +121,7 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
       } else {
         setError("Failed to delete message");
       }
-    } catch (error) {
+    } catch {
       setError("Failed to delete message");
     } finally {
       setIsLoading(false);
@@ -156,11 +165,7 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
           >
             <X className="h-4 w-4" />
           </Button>
-          {error && (
-            <div className="text-sm text-red-600">
-              {error}
-            </div>
-          )}
+          {error && <div className="text-sm text-red-600">{error}</div>}
         </div>
       </div>
     );
@@ -188,11 +193,7 @@ export function MessageActions({ messageId, messageText, userId, currentUserId }
         <Trash2 className="h-3 w-3 mr-1" />
         Delete
       </Button>
-      {error && (
-        <div className="text-sm text-red-600">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-sm text-red-600">{error}</div>}
     </div>
   );
 }

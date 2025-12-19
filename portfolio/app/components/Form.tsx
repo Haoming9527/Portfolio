@@ -4,47 +4,35 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Loader2, Mail, CheckCircle } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
-import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import {
+  LoginLink,
+  RegisterLink,
+} from "@kinde-oss/kinde-auth-nextjs/components";
+import { useAuth } from "../lib/auth";
 
 export function Form() {
   const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isSubmittingRef = useRef(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<{ id: string; email?: string; given_name?: string; family_name?: string; picture?: string; username?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
 
-  const checkAuth = async () => {
-    try {
-      const response = await fetch("/api/guestbook/user-info", {
-        method: "GET",
-      });
-      
-      if (response.ok) {
-        setIsAuthenticated(true);
-        const userData = await response.json();
-        setUser(userData);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error("Auth check error:", error);
-      setIsAuthenticated(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   // Auto-resize textarea based on content
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
@@ -59,33 +47,29 @@ export function Form() {
       adjustTextareaHeight();
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    checkAuth();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleLogout = async () => {
     try {
-      window.location.href = '/api/auth/logout';
+      window.location.href = "/api/auth/logout";
     } catch (error) {
-      console.error('Logout error:', error);
-      window.location.href = '/api/auth/logout';
+      console.error("Logout error:", error);
+      window.location.href = "/api/auth/logout";
     }
   };
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async () => {
     // Prevent double submission
     if (isSubmittingRef.current) {
       return;
     }
-    
+
     isSubmittingRef.current = true;
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       const response = await fetch("/api/guestbook", {
         method: "POST",
@@ -98,9 +82,10 @@ export function Form() {
       if (response.ok) {
         formRef.current?.reset();
         setMessage("");
-        window.location.reload();
+        // Instead of reloading, dispatch a custom event to refresh guestbook
+        window.dispatchEvent(new CustomEvent("guestbook-updated"));
       } else if (response.status === 401) {
-        window.location.href = '/api/auth/login';
+        window.location.href = "/api/auth/login";
       } else {
         const errorData = await response.json();
         setError(errorData.error || "Failed to post message");
@@ -151,12 +136,15 @@ export function Form() {
         <CardContent>
           <div className="flex gap-2 w-full md:w-auto">
             <RegisterLink>
-              <Button variant="outline" className="w-full md:w-auto">
+              <Button
+                variant="outline"
+                className="w-full md:w-auto hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105 transition-all duration-200"
+              >
                 Sign up
               </Button>
             </RegisterLink>
             <LoginLink>
-              <Button className="w-full md:w-auto">
+              <Button className="w-full md:w-auto hover:scale-105 transition-all duration-200">
                 Sign in
               </Button>
             </LoginLink>
@@ -171,20 +159,18 @@ export function Form() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CheckCircle className="h-5 w-5 text-green-600" />
-          Welcome, {user?.username || 'User'}!
+          Welcome, {user?.username || "User"}!
         </CardTitle>
         <CardDescription>
           Welcome! You can now leave a message in the guestbook.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <form
-          ref={formRef}
-          action={handleSubmit}
-          className="space-y-4"
-        >
+        <form ref={formRef} action={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="message" className="mb-1">Message</Label>
+            <Label htmlFor="message" className="mb-1">
+              Message
+            </Label>
             <Textarea
               ref={textareaRef}
               id="message"
@@ -198,23 +184,20 @@ export function Form() {
             <div className="text-xs text-muted-foreground text-right">
               {message.length}/500 characters
             </div>
-            {error && (
-              <div className="text-sm text-red-600">
-                {error}
-              </div>
-            )}
+            {error && <div className="text-sm text-red-600">{error}</div>}
           </div>
 
           <div className="flex justify-end">
             <SubmitButton isSubmitting={isSubmitting} />
           </div>
         </form>
-        
+
         <div className="flex justify-end">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={handleLogout}
+            className="hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-700 hover:scale-105 transition-all duration-200"
           >
             Sign Out
           </Button>
@@ -233,8 +216,8 @@ function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
           Please Wait
         </Button>
       ) : (
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="w-full md:w-auto"
           disabled={isSubmitting}
         >

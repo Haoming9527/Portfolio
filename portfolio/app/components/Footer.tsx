@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -18,7 +17,7 @@ export function Footer() {
               Software Developer
             </p>
             <div className="flex space-x-4">
-            <a
+              <a
                 href="https://www.linkedin.com/in/shen-haoming/"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -60,9 +59,13 @@ export function Footer() {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Contact</h4>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Contact
+            </h4>
             <div className="space-y-2 text-sm">
-              <p className="text-gray-600 dark:text-gray-300">lbb54188@gmail.com</p>
+              <p className="text-gray-600 dark:text-gray-300">
+                lbb54188@gmail.com
+              </p>
               <p className="text-gray-600 dark:text-gray-300">+65 8761 3426</p>
               <p className="text-gray-600 dark:text-gray-300">Singapore</p>
             </div>
@@ -72,7 +75,9 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Quick Links</h4>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Quick Links
+            </h4>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
               <Link
                 href="/"
@@ -106,7 +111,6 @@ export function Footer() {
               </Link>
             </div>
           </div>
-
         </div>
 
         {/* Bottom Section */}

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Certificate } from "../lib/interface";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
@@ -9,7 +9,9 @@ interface CertificatesClientProps {
   certificates: Certificate[];
 }
 
-export default function CertificatesClient({ certificates }: CertificatesClientProps) {
+export default function CertificatesClient({
+  certificates,
+}: CertificatesClientProps) {
   const [activeTag, setActiveTag] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredData, setFilteredData] = useState<Certificate[]>(certificates);
@@ -22,69 +24,98 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const certificatesRef = useRef(certificates);
 
-  // Define the order of tags 
-  const tagOrder = ["All", "Programming", "Design", "IT", "Cybersecurity", "AI", "FinTech", "Hackathon", "Leadership", "Others"];
-  
+  // Update ref when certificates prop changes
+  useEffect(() => {
+    certificatesRef.current = certificates;
+  }, [certificates]);
+
+  // Define the order of tags
+  const tagOrder = [
+    "All",
+    "Programming",
+    "Design",
+    "IT",
+    "Cybersecurity",
+    "AI",
+    "FinTech",
+    "Hackathon",
+    "Leadership",
+    "Others",
+  ];
+
   // Collect all unique tags from the certificates and sort them according to the defined order
-  const allTags = ["All", ...Array.from(
-    new Set(
-      certificates.flatMap(cert => cert.tags || [])
-    )
-  ).sort((a, b) => {
-    const aIndex = tagOrder.indexOf(a);
-    const bIndex = tagOrder.indexOf(b);
-    
-    // If both tags are in the order array, sort by their position
-    if (aIndex !== -1 && bIndex !== -1) {
-      return aIndex - bIndex;
-    }
-    
-    // If only one tag is in the order array, prioritize it
-    if (aIndex !== -1) return -1;
-    if (bIndex !== -1) return 1;
-    
-    // If neither tag is in the order array, sort alphabetically
-    return a.localeCompare(b);
-  })];
+  const allTags = [
+    "All",
+    ...Array.from(
+      new Set(certificates.flatMap((cert) => cert.tags || []))
+    ).sort((a, b) => {
+      const aIndex = tagOrder.indexOf(a);
+      const bIndex = tagOrder.indexOf(b);
+
+      // If both tags are in the order array, sort by their position
+      if (aIndex !== -1 && bIndex !== -1) {
+        return aIndex - bIndex;
+      }
+
+      // If only one tag is in the order array, prioritize it
+      if (aIndex !== -1) return -1;
+      if (bIndex !== -1) return 1;
+
+      // If neither tag is in the order array, sort alphabetically
+      return a.localeCompare(b);
+    }),
+  ];
 
   // Filter certificates based on tag and search query
   const filterCertificates = (tag: string, query: string) => {
     let filtered = certificates;
-    
+
     // Filter by tag
     if (tag !== "All") {
-      filtered = filtered.filter((cert: Certificate) => 
+      filtered = filtered.filter((cert: Certificate) =>
         (cert.tags || []).includes(tag)
       );
     }
-    
+
     // Filter by search query
     if (query.trim()) {
-      filtered = filtered.filter((cert: Certificate) => 
-        (cert.title?.toLowerCase().includes(query.toLowerCase()) || false) ||
-        (cert.description?.toLowerCase().includes(query.toLowerCase()) || false)
+      filtered = filtered.filter(
+        (cert: Certificate) =>
+          cert.title?.toLowerCase().includes(query.toLowerCase()) ||
+          false ||
+          cert.description?.toLowerCase().includes(query.toLowerCase()) ||
+          false
       );
     }
-    
+
     return filtered;
   };
 
+  // Close modal
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setModalImage("");
+    setModalAlt("");
+
+    const params = new URLSearchParams(searchParams);
+    params.delete("id");
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, pathname, replace]);
+
   // Check URL for certificate ID on mount and update
   useEffect(() => {
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
     if (id) {
-      const cert = certificates.find(c => c._id === id);
+      const cert = certificatesRef.current.find((c) => c._id === id);
       if (cert) {
         setModalImage(cert.imageUrl);
         setModalAlt(cert.title);
         setIsModalOpen(true);
       }
-    } else if (isModalOpen) {
-        // If modal is open but no ID in URL (back button used), close modal
-        closeModal(); 
     }
-  }, [searchParams, certificates]); 
+  }, [searchParams]);
 
   // Handle tag filtering
   const handleTagClick = (tag: string) => {
@@ -106,20 +137,9 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
     setModalImage(cert.imageUrl);
     setModalAlt(cert.title);
     setIsModalOpen(true);
-    
-    const params = new URLSearchParams(searchParams);
-    params.set('id', cert._id);
-    replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
 
-  // Close modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalImage("");
-    setModalAlt("");
-    
     const params = new URLSearchParams(searchParams);
-    params.delete('id');
+    params.set("id", cert._id);
     replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
@@ -129,7 +149,7 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
       setShowCopiedToast(true);
       setTimeout(() => setShowCopiedToast(false), 2000);
     } catch (err) {
-      console.error('Failed to copy link:', err);
+      console.error("Failed to copy link:", err);
     }
   };
 
@@ -137,14 +157,23 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
     <>
       {/* Filter Section */}
       <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-
         {/* Desktop Search Bar */}
         <div className="hidden sm:block mb-8">
           <div className="max-w-lg mx-auto">
             <div className="relative group p-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 rounded-2xl hover:from-blue-500/30 hover:via-purple-500/30 hover:to-indigo-500/30 transition-all duration-300">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
               <input
@@ -176,7 +205,6 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
             ))}
           </div>
         </div>
-
       </div>
 
       {/* Mobile Search Bar and Filter */}
@@ -186,11 +214,31 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
           onClick={() => setIsFilterOpen(!isFilterOpen)}
           className="flex items-center justify-center gap-1 w-12 h-10 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 border-2 border-transparent"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+            />
           </svg>
-          <svg className={`w-3 h-3 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <svg
+            className={`w-3 h-3 transition-transform ${isFilterOpen ? "rotate-180" : ""}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
@@ -198,8 +246,18 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
         <div className="flex-1 max-w-md">
           <div className="relative group p-0.5 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 rounded-xl hover:from-blue-500/30 hover:via-purple-500/30 hover:to-indigo-500/30 transition-all duration-300">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
             <input
@@ -233,15 +291,15 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
           </div>
         </div>
       )}
-      
+
       <div className="grid md:grid-cols-3 gap-8 grid-cols-1">
         {filteredData.map((cert, index) => (
-                     <div
-             key={cert._id}
-             onClick={() => handleCertificateClick(cert)}
-             className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-4 duration-500 cursor-pointer"
-             style={{ animationDelay: `${index * 100}ms` }}
-           >
+          <div
+            key={cert._id}
+            onClick={() => handleCertificateClick(cert)}
+            className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-4 duration-500 cursor-pointer"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
             <div className="aspect-[3/4] md:aspect-[4/3] overflow-hidden rounded-2xl relative mb-6 bg-gray-50 dark:bg-gray-800">
               {cert.imageUrl ? (
                 <Image
@@ -254,17 +312,29 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
                 <div className="w-full h-full bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl flex items-center justify-center">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-8 h-8 text-blue-600 dark:text-blue-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                     </div>
-                    <span className="text-blue-600 dark:text-blue-400 font-medium">Certificate</span>
+                    <span className="text-blue-600 dark:text-blue-400 font-medium">
+                      Certificate
+                    </span>
                   </div>
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
             </div>
-            
+
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                 {cert.title}
@@ -287,31 +357,51 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
         ))}
       </div>
       {isModalOpen && modalImage && (
-        <div
-          className="fixed inset-0 z-[1000] flex items-start justify-center bg-black/90 backdrop-blur-sm p-4 overflow-y-auto pt-20"
-        >
+        <div className="fixed inset-0 z-[1000] flex items-start justify-center bg-black/90 backdrop-blur-sm p-4 overflow-y-auto pt-20">
           <div className="absolute top-4 left-4 z-[1010] md:top-6 md:left-6">
-             <button
-               onClick={handleShare}
-               className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all duration-300"
-               title="Copy link to clipboard"
-             >
-               {showCopiedToast ? (
-                 <>
-                   <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                   </svg>
-                   <span className="text-sm font-medium text-green-400">Copied!</span>
-                 </>
-               ) : (
-                 <>
-                   <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                   </svg>
-                   <span className="text-sm font-medium">Share</span>
-                 </>
-               )}
-             </button>
+            <button
+              onClick={handleShare}
+              className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all duration-300"
+              title="Copy link to clipboard"
+            >
+              {showCopiedToast ? (
+                <>
+                  <svg
+                    className="w-5 h-5 text-green-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium text-green-400">
+                    Copied!
+                  </span>
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-5 h-5 group-hover:scale-110 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">Share</span>
+                </>
+              )}
+            </button>
           </div>
 
           <button
@@ -333,7 +423,7 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
               <div className="relative w-full flex items-center justify-center h-[50vh] sm:h-[60vh] md:h-[78vh]">
                 <Image
                   src={modalImage}
-                  alt={modalAlt || 'Certificate Image'}
+                  alt={modalAlt || "Certificate Image"}
                   width={1200}
                   height={900}
                   className="max-w-full max-h-full object-contain rounded-lg shadow-md transition-transform duration-300"
@@ -346,12 +436,15 @@ export default function CertificatesClient({ certificates }: CertificatesClientP
                 {modalAlt}
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base md:text-lg">
-                {filteredData.find(cert => cert.title === modalAlt)?.description}
+                {
+                  filteredData.find((cert) => cert.title === modalAlt)
+                    ?.description
+                }
               </p>
             </div>
           </div>
         </div>
       )}
-     </>
-   );
- }
+    </>
+  );
+}

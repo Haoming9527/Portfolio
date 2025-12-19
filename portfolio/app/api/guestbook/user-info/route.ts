@@ -1,4 +1,4 @@
-import { prisma } from '@/app/lib/db';
+import { prisma } from "@/app/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { NextResponse } from "next/server";
 import { unstable_noStore as noStore } from "next/cache";
@@ -13,7 +13,7 @@ export async function GET() {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  let username = 'User';
+  let username = "User";
   if (user.given_name && user.family_name) {
     username = `${user.given_name} ${user.family_name}`;
   } else if (user.given_name) {
@@ -24,28 +24,40 @@ export async function GET() {
 
   try {
     const existingUserById = await prisma.user.findUnique({
-      where: { id: user.id }
+      where: { id: user.id },
     });
 
     let existingUserByEmail = null;
     if (user.email) {
       existingUserByEmail = await prisma.user.findUnique({
-        where: { email: user.email }
+        where: { email: user.email },
       });
     }
 
     let dbUser;
-    
+
     if (existingUserById) {
-      dbUser = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          username: username,
-          email: user.email ?? "",
-          profileimage: user.picture,
-        },
-      });
-      logger.info('Existing user updated by ID', { userId: user.id });
+      const needsUpdate =
+        existingUserById.username !== username ||
+        existingUserById.email !== (user.email ?? "") ||
+        existingUserById.profileimage !== user.picture;
+
+      if (needsUpdate) {
+        dbUser = await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            username: username,
+            email: user.email ?? "",
+            profileimage: user.picture,
+          },
+        });
+        logger.info("Existing user updated by ID", { userId: user.id });
+      } else {
+        dbUser = existingUserById;
+        logger.info("User info retrieved (no update needed)", {
+          userId: user.id,
+        });
+      }
     } else if (existingUserByEmail) {
       dbUser = await prisma.user.update({
         where: { id: existingUserByEmail.id },
@@ -55,7 +67,9 @@ export async function GET() {
           profileimage: user.picture,
         },
       });
-      
+      logger.info("Existing user updated by email", {
+        userId: existingUserByEmail.id,
+      });
     } else {
       dbUser = await prisma.user.create({
         data: {
@@ -65,25 +79,26 @@ export async function GET() {
           profileimage: user.picture,
         },
       });
-      logger.info('New user created', { userId: user.id, email: user.email });
+      logger.info("New user created", { userId: user.id, email: user.email });
     }
-
-    logger.info('User info retrieved/updated', { userId: dbUser.id });
 
     return NextResponse.json({
       id: dbUser.id,
       email: dbUser.email,
       username: dbUser.username,
       profileimage: dbUser.profileimage,
-      email_verified: true
+      email_verified: true,
     });
   } catch (error) {
-    logger.error('Error in user-info route', { 
+    logger.error("Error in user-info route", {
       error: error instanceof Error ? error.message : String(error),
       userId: user.id,
-      email: user.email 
+      email: user.email,
     });
-    
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

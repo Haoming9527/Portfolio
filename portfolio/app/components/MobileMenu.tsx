@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetFooter,
   SheetHeader,
@@ -29,12 +28,12 @@ export function MobileMenu() {
   useEffect(() => {
     setOpen(false);
   }, [location]);
-  
+
   return (
     <Sheet open={open} onOpenChange={(state) => setOpen(state)}>
       <SheetTrigger asChild>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="icon"
           className="h-9 w-9 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/20 dark:hover:to-purple-950/20 hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-200"
         >
@@ -42,13 +41,16 @@ export function MobileMenu() {
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[280px] bg-gradient-to-b from-white/95 via-gray-50/95 to-white/95 dark:from-gray-950/95 dark:via-gray-900/95 dark:to-gray-950/95 backdrop-blur-md border-l border-gray-200 dark:border-gray-800">
+      <SheetContent
+        side="right"
+        className="w-[280px] bg-gradient-to-b from-white/95 via-gray-50/95 to-white/95 dark:from-gray-950/95 dark:via-gray-900/95 dark:to-gray-950/95 backdrop-blur-md border-l border-gray-200 dark:border-gray-800"
+      >
         <SheetHeader className="border-b border-gray-200 dark:border-gray-800 pb-4">
           <SheetTitle className="text-left text-xl font-bold text-gray-900 dark:text-white tracking-tight">
             Navigation
           </SheetTitle>
         </SheetHeader>
-        
+
         <div className="flex flex-col space-y-2 py-6">
           {navigationItems.map((item, index) => (
             <Link
@@ -73,13 +75,26 @@ export function MobileMenu() {
         </div>
 
         <SheetFooter className="border-t border-gray-200 dark:border-gray-800 pt-4">
-          <Button 
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200 font-semibold text-sm tracking-wide" 
+          <Button
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200 font-semibold text-sm tracking-wide"
             asChild
           >
-            <a href="mailto:lbb54188@gmail.com" className="flex items-center justify-center space-x-2">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <a
+              href="mailto:lbb54188@gmail.com"
+              className="flex items-center justify-center space-x-2"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
               </svg>
               <span>Contact</span>
             </a>

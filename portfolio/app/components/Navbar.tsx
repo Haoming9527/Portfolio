@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -45,20 +46,24 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo/Brand */}
           <div className="flex items-center">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="group flex items-center space-x-3 transition-all duration-200 hover:no-underline"
             >
               <div className="relative">
                 <div className="h-10 w-10 rounded-lg bg-white dark:bg-black border-2 border-gray-300 dark:border-gray-700 flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm group-hover:shadow-md overflow-hidden">
-                  <img 
-                    src="/appicon_light.png" 
-                    alt="HM Logo" 
+                  <Image
+                    src="/appicon_light.png"
+                    alt="HM Logo"
+                    width={24}
+                    height={24}
                     className="h-6 w-6 object-contain dark:hidden"
                   />
-                  <img 
-                    src="/appicon_dark.png" 
-                    alt="HM Logo" 
+                  <Image
+                    src="/appicon_dark.png"
+                    alt="HM Logo"
+                    width={24}
+                    height={24}
                     className="h-6 w-6 object-contain hidden dark:block"
                   />
                 </div>
@@ -66,9 +71,11 @@ export function Navbar() {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                  Shen <span className="font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Haoming</span>
+                  Shen{" "}
+                  <span className="font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Haoming
+                  </span>
                 </h1>
-               
               </div>
             </Link>
           </div>
@@ -76,7 +83,7 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navigationItems.map((item, index) => (
-              <Link 
+              <Link
                 key={index}
                 href={item.href}
                 className={cn(
@@ -99,19 +106,32 @@ export function Navbar() {
           <div className="flex items-center space-x-4">
             {/* Theme Toggle */}
             <ThemeToggle />
-            
-            <Button 
-              className="hidden sm:flex bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200 font-semibold text-sm tracking-wide" 
+
+            <Button
+              className="hidden sm:flex bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200 font-semibold text-sm tracking-wide"
               asChild
             >
-              <a href="mailto:lbb54188@gmail.com" className="flex items-center space-x-2 hover:no-underline">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <a
+                href="mailto:lbb54188@gmail.com"
+                className="flex items-center space-x-2 hover:no-underline"
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
                 <span>Contact</span>
               </a>
             </Button>
-            
+
             {/* Mobile menu */}
             <div className="md:hidden">
               <MobileMenu />
