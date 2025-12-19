@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
-import { unstable_noStore as noStore } from "next/cache";
 import { Form } from "../components/Form";
 import { GuestBookEntriesClient } from "../components/GuestBookEntriesClient";
 import { AuthProvider } from "../lib/auth";
@@ -10,13 +9,13 @@ import { MessageSquare } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Guestbook",
 };
 
 async function getGuestBookEntries() {
-  noStore();
-
   try {
     const data = await prisma.guestBookEntry.findMany({
       include: {

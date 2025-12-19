@@ -106,7 +106,7 @@ export default function CertificatesClient({
     });
 
     const folders: FolderItem[] = Object.entries(grouped)
-      .filter(([_, certificates]) => certificates.length > 1)
+      .filter(([, certificates]) => certificates.length > 1)
       .map(([company, certificates]) => {
         const sortedCerts = certificates.sort((a, b) => 
           (a.orderRank || "").localeCompare(b.orderRank || "")
@@ -127,8 +127,8 @@ export default function CertificatesClient({
       });
 
     const singleCompanyCerts = Object.entries(grouped)
-      .filter(([_, certificates]) => certificates.length === 1)
-      .flatMap(([_, certificates]) => certificates);
+      .filter(([, certificates]) => certificates.length === 1)
+      .flatMap(([, certificates]) => certificates);
 
     const allIndividualCerts = [...ungrouped, ...singleCompanyCerts];
 
@@ -345,7 +345,7 @@ export default function CertificatesClient({
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">No certificates found</h3>
                     <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
-                        We couldn't find any certificates matching "{searchQuery}" in {activeTag}. Try adjusting your search or filter.
+                        We couldn&apos;t find any certificates matching &quot;{searchQuery}&quot; in {activeTag}. Try adjusting your search or filter.
                     </p>
                     <button
                         onClick={() => {
