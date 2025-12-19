@@ -64,7 +64,7 @@ export function ThemeToggle() {
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="h-9 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 flex items-center gap-2"
+        className="h-9 px-3 hover:bg-gray-200 dark:hover:bg-gray-800 transition-all duration-200 flex items-center gap-2"
         aria-label="Theme selector"
       >
         {getIcon()}

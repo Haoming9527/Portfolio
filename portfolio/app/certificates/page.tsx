@@ -14,6 +14,8 @@ async function getData() {
     _id,
     description,
     tags,
+    company,
+    orderRank,
     "imageUrl": image.asset->url
   }`;
 
@@ -23,7 +25,7 @@ async function getData() {
 
 export default async function CertificatesPage() {
   const data: Certificate[] = await getData();
-  
+
   return (
     <div className="container mx-auto px-6 py-16">
       <div className="text-center mb-16">
@@ -31,13 +33,19 @@ export default async function CertificatesPage() {
           Certificates & Achievements
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-top-4 duration-700 delay-200">
-        Certifications and achievements earned throughout my learning journey
+          Certifications and achievements earned throughout my learning journey
         </p>
       </div>
-      
-      <Suspense fallback={<div className="text-center py-20 text-gray-500">Loading certificates...</div>}>
+
+      <Suspense
+        fallback={
+          <div className="text-center py-20 text-gray-500">
+            Loading certificates...
+          </div>
+        }
+      >
         <CertificatesClient certificates={data} />
       </Suspense>
     </div>
   );
-}  
+}

@@ -13,6 +13,8 @@ export interface Certificate {
   description: string;
   tags: string[];
   imageUrl: string;
+  company?: string;
+  orderRank?: string;
 }
 
 export interface Education {
