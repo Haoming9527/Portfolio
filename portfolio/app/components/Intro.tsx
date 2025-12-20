@@ -2,34 +2,31 @@ import Image from "next/image";
 import profile from "../../public/profile.jpg";
 import { Card, CardContent } from "@/components/ui/card";
 
+import { HackerName } from "./HackerName";
+
 export function Intro() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-6 lg:p-8">
+    <div className="grid grid-cols-1 lg:grid-cols-8 gap-4 p-6 lg:p-8">
       <Image
         src={profile}
         alt="Shen Haoming"
-        className="col-span-1 lg:col-span-1 h-[300px] lg:h-[500px] object-cover rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200/50 dark:border-blue-700/50 order-1 lg:order-2"
+        className="col-span-1 lg:col-span-3 h-[300px] lg:h-[500px] object-cover object-top rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200/50 dark:border-blue-700/50 order-1 lg:order-2"
         priority
       />
-      <Card className="col-span-1 lg:col-span-2 h-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-950/20 dark:to-purple-950/20 min-h-[400px] lg:min-h-[300px] border border-blue-200/50 dark:border-blue-700/50 order-2 lg:order-1">
-        <CardContent className="p-6 lg:p-8">
+      <Card className="col-span-1 lg:col-span-5 h-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-950/20 dark:to-purple-950/20 min-h-[400px] lg:min-h-[300px] border border-blue-200/50 dark:border-blue-700/50 order-2 lg:order-1">
+        <CardContent className="p-6 h-full flex flex-col justify-center">
           <div className="max-w-lg">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent" style={{
-              lineHeight: '1.4',
-              letterSpacing: '-0.03em'
-            }}>
-              Shen Haoming
-            </h1>
-            <h2 className="text-2xl lg:text-3xl font-semibold mt-6 text-gray-800 dark:text-gray-200">
+            <HackerName />
+            <h2 className="text-2xl lg:text-2xl font-semibold mt-6 text-gray-800 dark:text-gray-200">
               Software Developer
             </h2>
-            <p className="text-lg lg:text-xl font-normal mt-6 text-gray-600 dark:text-gray-400 leading-relaxed">
+            <p className="text-lg lg:text-lg font-normal mt-6 text-gray-600 dark:text-gray-400 leading-relaxed">
             Passionate about building innovative software with modern web technologies and applying them to solve real-world problems.
             </p>
 
           <a
             href="mailto:lbb54188@gmail.com"
-            className="relative inline-block text-lg group mt-10"
+            className="relative inline-block text-lg group mt-6"
           >
             <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-gray-800 dark:text-gray-200 transition-colors duration-300 ease-out border-2 border-blue-600 dark:border-blue-400 rounded-lg group-hover:text-white dark:group-hover:text-gray-900 bg-white dark:bg-gray-900">
               <span className="absolute inset-0 w-full h-full px-5 py-3 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 opacity-100 group-hover:opacity-0 transition-opacity duration-300"></span>
@@ -42,7 +39,7 @@ export function Intro() {
             ></span>
           </a>
           
-          <div className="flex gap-4 mt-6">
+          <div className="flex gap-4 mt-4">
             <a
               href="https://www.linkedin.com/in/shen-haoming/"
               target="_blank"
