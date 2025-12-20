@@ -16,7 +16,8 @@ async function getData() {
     tags,
     company,
     orderRank,
-    "imageUrl": image.asset->url
+    "imageUrl": image.asset->url,
+    "dimensions": image.asset->metadata.dimensions
   }`;
 
   const data = await client.fetch(query, {}, { next: { revalidate: 30 } });

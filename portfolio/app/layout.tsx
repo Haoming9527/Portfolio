@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Shen Haoming - Software Developer",
   description: "Portfolio and guestbook of Shen Haoming, a software developer",
+  metadataBase: new URL("https://shen-haoming.com"),
 };
 
 export default function RootLayout({

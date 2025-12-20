@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, useDeferredValue } from "react";
 import { Certificate } from "../lib/interface";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Folder, FolderOpen, ChevronLeft } from "lucide-react";
@@ -31,7 +31,8 @@ export default function CertificatesClient({
 }: CertificatesClientProps) {
   const [activeTag, setActiveTag] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<Certificate[]>(certificates);
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
   const [modalImage, setModalImage] = useState<string>("");
   const [modalAlt, setModalAlt] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function CertificatesClient({
     }
   }, [activeFolder]);
 
-  const tagOrder = [
+  const tagOrder = useMemo(() => [
     "All",
     "Programming",
     "Design",
@@ -69,9 +70,9 @@ export default function CertificatesClient({
     "Hackathon",
     "Leadership",
     "Others",
-  ];
+  ], []);
 
-  const allTags = [
+  const allTags = useMemo(() => [
     "All",
     ...Array.from(
       new Set(certificates.flatMap((cert) => cert.tags || []))
@@ -86,9 +87,31 @@ export default function CertificatesClient({
       if (bIndex !== -1) return 1;
       return a.localeCompare(b);
     }),
-  ];
+  ], [certificates, tagOrder]);
 
-  const createFoldersAndItems = (certs: Certificate[]) => {
+  const filteredData = useMemo(() => {
+    let filtered = certificates;
+
+    if (activeTag !== "All") {
+      filtered = filtered.filter((cert: Certificate) =>
+        (cert.tags || []).includes(activeTag)
+      );
+    }
+
+    if (deferredSearchQuery.trim()) {
+      const lowerQuery = deferredSearchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (cert: Certificate) =>
+          cert.title?.toLowerCase().includes(lowerQuery) ||
+          cert.description?.toLowerCase().includes(lowerQuery) ||
+          cert.company?.toLowerCase().includes(lowerQuery)
+      );
+    }
+
+    return filtered;
+  }, [certificates, activeTag, deferredSearchQuery]);
+
+  const createFoldersAndItems = useCallback((certs: Certificate[]) => {
     const grouped: { [key: string]: Certificate[] } = {};
     const ungrouped: Certificate[] = [];
 
@@ -142,28 +165,9 @@ export default function CertificatesClient({
     ].sort((a, b) => (a.orderRank || "").localeCompare(b.orderRank || ""));
 
     return { allItems, folders };
-  };
+  }, []);
 
-  const filterCertificates = (tag: string, query: string) => {
-    let filtered = certificates;
-
-    if (tag !== "All") {
-      filtered = filtered.filter((cert: Certificate) =>
-        (cert.tags || []).includes(tag)
-      );
-    }
-
-    if (query.trim()) {
-      filtered = filtered.filter(
-        (cert: Certificate) =>
-          cert.title?.toLowerCase().includes(query.toLowerCase()) ||
-          cert.description?.toLowerCase().includes(query.toLowerCase()) ||
-          cert.company?.toLowerCase().includes(query.toLowerCase())
-      );
-    }
-
-    return filtered;
-  };
+  const { allItems, folders } = useMemo(() => createFoldersAndItems(filteredData), [filteredData, createFoldersAndItems]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
@@ -190,16 +194,12 @@ export default function CertificatesClient({
   const handleTagClick = (tag: string) => {
     setActiveTag(tag);
     setActiveFolder(null); 
-    const filtered = filterCertificates(tag, searchQuery);
-    setFilteredData(filtered);
     setIsFilterOpen(false);
   };
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
     if (query) setActiveFolder(null);
-    const filtered = filterCertificates(activeTag, query);
-    setFilteredData(filtered);
   };
 
   const handleCertificateClick = (cert: Certificate) => {
@@ -333,8 +333,6 @@ export default function CertificatesClient({
       )}
 
       {(() => {
-        const { allItems, folders } = createFoldersAndItems(filteredData);
-        
         if (allItems.length === 0) {
             return (
                 <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 animate-in fade-in zoom-in duration-500">
@@ -350,7 +348,6 @@ export default function CertificatesClient({
                     <button
                         onClick={() => {
                             setActiveTag("All");
-                            setFilteredData(filterCertificates("All", searchQuery));
                         }}
                         className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
                     >
@@ -495,9 +492,12 @@ export default function CertificatesClient({
 }
 
 function FolderCard({ folder }: { folder: FolderItem }) {
+  const firstCert = folder.certificates[0];
+  const isLandscape = firstCert?.dimensions ? firstCert.dimensions.width > firstCert.dimensions.height : true;
+
   return (
     <>
-      <div className="aspect-[3/4] md:aspect-[4/3] overflow-hidden rounded-2xl relative mb-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+      <div className={`${isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]'} md:aspect-[4/3] overflow-hidden rounded-2xl relative mb-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20`}>
         <div className="relative w-full h-full p-4 flex items-center justify-center">
           {folder.previewImages.length > 0 ? (
             <div className="relative w-full h-full flex items-center justify-center">
@@ -508,18 +508,20 @@ function FolderCard({ folder }: { folder: FolderItem }) {
                     key={index}
                     className="absolute w-[80%] h-[80%] bg-white dark:bg-gray-800 rounded-xl shadow-lg border-2 border-gray-300 dark:border-gray-600 transition-transform duration-300"
                     style={{
-                      transform: `translate(${index * 10}px, ${-index * 10}px) scale(${1 - index * 0.05})`,
+                      transform: `translate(${index * 15}px, ${-index * 15}px) scale(${1 - index * 0.05})`,
                       zIndex: 3 - index,
                     }}
                   >
-                    <div className="relative w-full h-full"> 
-                      <Image
-                        src={imageUrl}
-                        alt="Certificate preview"
-                        fill
-                        className="object-contain rounded-xl p-2"
-                      />
-                    </div>
+                    {index === 0 && (
+                      <div className="relative w-full h-full"> 
+                        <Image
+                          src={imageUrl}
+                          alt="Certificate preview"
+                          fill
+                          className="object-contain rounded-xl p-2"
+                        />
+                      </div>
+                    )}
                   </div>
                 ))}
             </div>
@@ -601,9 +603,11 @@ function FolderCard({ folder }: { folder: FolderItem }) {
 }
 
 function CertificateCard({ cert }: { cert: Certificate }) {
+  const isLandscape = cert.dimensions ? cert.dimensions.width > cert.dimensions.height : true;
+
   return (
     <>
-      <div className="aspect-[3/4] md:aspect-[4/3] overflow-hidden rounded-2xl relative mb-6 bg-gray-50 dark:bg-gray-800">
+      <div className={`${isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]'} md:aspect-[4/3] overflow-hidden rounded-2xl relative mb-6 bg-gray-50 dark:bg-gray-800`}>
         {cert.imageUrl ? (
           <Image
             src={cert.imageUrl}

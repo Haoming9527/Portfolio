@@ -15,6 +15,10 @@ export interface Certificate {
   imageUrl: string;
   company?: string;
   orderRank?: string;
+  dimensions?: {
+    width: number;
+    height: number;
+  };
 }
 
 export interface Education {

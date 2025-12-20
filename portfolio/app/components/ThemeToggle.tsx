@@ -8,7 +8,12 @@ import { useState, useEffect, useRef } from "react";
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -24,6 +29,8 @@ export function ThemeToggle() {
   }, []);
 
   const getIcon = () => {
+    if (!mounted) return <Sun className="h-4 w-4" />;
+    
     switch (theme) {
       case "light":
         return <Sun className="h-4 w-4" />;
@@ -37,6 +44,8 @@ export function ThemeToggle() {
   };
 
   const getLabel = () => {
+    if (!mounted) return "Light";
+
     switch (theme) {
       case "light":
         return "Light";
