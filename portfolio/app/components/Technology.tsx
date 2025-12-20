@@ -1,8 +1,8 @@
-import Image from "next/image";
-import square from "../../public/square.jpg";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Technology as TechnologyType } from "../lib/interface";
 import { client } from "../lib/sanity";
+import DynamicTechScene from "@/components/ui/3d/technology/DynamicTechScene";
+import Image from "next/image";
 
 async function getTechnologyData() {
   const query = `*[_type == 'technology'] | order(orderRank asc) {
@@ -22,12 +22,8 @@ export async function Technology() {
   
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-6 lg:p-8 mt-10">
-      <div className="w-full relative col-span-1">
-      <Image
-          src={square}
-          alt="square"
-          className="w-full h-full object-cover rounded-2xl"
-        />
+      <div className="w-full relative col-span-1 min-h-[300px] h-full">
+         <DynamicTechScene />
       </div>
       <div className="flex flex-col w-full col-span-1 lg:col-span-2 gap-4">
         <Card className="bg-gray-100 dark:bg-gray-800 border-none">

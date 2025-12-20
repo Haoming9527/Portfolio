@@ -46,7 +46,8 @@ export function HackerName() {
 
   return (
     <h1
-      className="text-4xl sm:text-5xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent font-[family-name:var(--font-geist-mono)] cursor-default select-none relative z-20"
+      onClick={scramble}
+      className="text-4xl sm:text-5xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent font-[family-name:var(--font-geist-mono)] cursor-pointer select-none relative z-20"
       style={{ lineHeight: "1.4" }}
     >
       {text}

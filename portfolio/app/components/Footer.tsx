@@ -71,7 +71,29 @@ export function Footer() {
             </div>
           </div>
 
-          <div></div>
+          {/* Tech Stack */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Built with
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { name: "Next.js", url: "https://nextjs.org" },
+                { name: "Tailwind", url: "https://tailwindcss.com" },
+                { name: "Supabase", url: "https://supabase.com" },
+              ].map((tech) => (
+                <a
+                  key={tech.name}
+                  href={tech.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-2 py-1 text-xs font-medium rounded-md bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 hover:scale-105 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 cursor-pointer"
+                >
+                  {tech.name}
+                </a>
+              ))}
+            </div>
+          </div>
 
           {/* Quick Links */}
           <div className="space-y-4">

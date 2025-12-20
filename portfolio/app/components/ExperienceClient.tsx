@@ -1,3 +1,7 @@
+"use client";
+
+import { useRef, useEffect } from "react";
+import gsap from "gsap";
 import Image from "next/image";
 import { Education, Experience as ExperienceType } from "../lib/interface";
 
@@ -15,61 +19,87 @@ function getColorClasses(color: string) {
       bgLight: string;
       bgDark: string;
       textDark: string;
+      border: string; 
     };
   } = {
     blue: {
-      dot: "bg-blue-600",
+      dot: "bg-blue-500",
       text: "text-blue-600",
       bgLight: "bg-blue-50",
       bgDark: "dark:bg-blue-900/20",
       textDark: "dark:text-blue-400",
+      border: "border-blue-400",
     },
     purple: {
-      dot: "bg-purple-600",
+      dot: "bg-purple-500",
       text: "text-purple-600",
       bgLight: "bg-purple-50",
       bgDark: "dark:bg-purple-900/20",
       textDark: "dark:text-purple-400",
+      border: "border-purple-400",
     },
     indigo: {
-      dot: "bg-indigo-600",
+      dot: "bg-indigo-500",
       text: "text-indigo-600",
       bgLight: "bg-indigo-50",
       bgDark: "dark:bg-indigo-900/20",
       textDark: "dark:text-indigo-400",
+      border: "border-indigo-400",
     },
     green: {
-      dot: "bg-green-600",
+      dot: "bg-green-500",
       text: "text-green-600",
       bgLight: "bg-green-50",
       bgDark: "dark:bg-green-900/20",
       textDark: "dark:text-green-400",
+      border: "border-green-400",
     },
     red: {
-      dot: "bg-red-600",
+      dot: "bg-red-500",
       text: "text-red-600",
       bgLight: "bg-red-50",
       bgDark: "dark:bg-red-900/20",
       textDark: "dark:text-red-400",
+      border: "border-red-400",
     },
     orange: {
-      dot: "bg-orange-600",
+      dot: "bg-orange-500",
       text: "text-orange-600",
       bgLight: "bg-orange-50",
       bgDark: "dark:bg-orange-900/20",
       textDark: "dark:text-orange-400",
+      border: "border-orange-400",
     },
   };
 
-  return colorMap[color] || colorMap.blue; // fallback to blue if color not found
+  return colorMap[color] || colorMap.blue; 
 }
 
 export function ExperienceClient({
   educationData,
   experienceData,
 }: ExperienceProps) {
+  const lineRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(".beam-light", 
+        { top: "100%" },
+        {
+          top: "-20%",
+          duration: 3,
+          repeat: -1,
+          ease: "linear", 
+        }
+      );
+    }, lineRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 relative z-10">
+      
       {/* Education Section */}
       <div className="mb-12 sm:mb-16 lg:mb-24">
         <div className="text-center mb-8 sm:mb-12 lg:mb-16">
@@ -80,23 +110,27 @@ export function ExperienceClient({
         </div>
 
         <div className="relative">
-          {/* Professional vertical timeline line */}
-          <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-600 via-purple-600 to-indigo-600 rounded-full"></div>
+          <div ref={lineRef} className="absolute left-0 sm:left-4 top-0 bottom-0 w-[2px] -ml-[1px] bg-gray-200 dark:bg-gray-800 pointer-events-none z-0 overflow-hidden rounded-full">
+             <div className="beam-light absolute -top-32 left-0 w-full h-32 bg-gradient-to-b from-transparent via-blue-500 to-transparent opacity-100 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+          </div>
 
-          <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+          <div className="space-y-6 sm:space-y-8 lg:space-y-10 relative z-10">
             {educationData.map((item, idx) => {
               const colors = getColorClasses(item.color);
               return (
-                <div key={idx} className="relative group">
-                  <div
-                    className={`absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full border-2 sm:border-3 lg:border-4 border-white shadow-lg z-10 ${colors.dot} dark:border-gray-800 group-hover:scale-110 transition-transform duration-300`}
-                  ></div>
+                <div key={idx} className="relative group pl-8 sm:pl-12">
+                   {/* Holo Dot */}
+                  <div className="absolute left-0 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 -ml-4 flex items-center justify-center z-10 group-hover:scale-125 transition-transform duration-300">
+                    {/* Core */}
+                    <div className={`w-3 h-3 rounded-full ${colors.dot} shadow-[0_0_10px_currentColor] animate-pulse`} />
+                  </div>
+
                   {item.url ? (
                     <a
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block ml-8 sm:ml-10 lg:ml-12 p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:border-blue-200 dark:group-hover:border-blue-800 cursor-pointer"
+                      className="block p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:border-blue-200 dark:group-hover:border-blue-800 cursor-pointer"
                     >
                       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4 sm:mb-6">
                         <div className="flex items-start gap-3 sm:gap-4 lg:gap-6">
@@ -159,7 +193,7 @@ export function ExperienceClient({
                       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                     </a>
                   ) : (
-                    <div className="ml-8 sm:ml-10 lg:ml-12 p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
+                    <div className="p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
                       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4 sm:mb-6">
                         <div className="flex items-start gap-3 sm:gap-4 lg:gap-6">
                           <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 p-1 sm:p-2 shadow-md">
