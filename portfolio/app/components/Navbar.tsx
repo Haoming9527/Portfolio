@@ -53,15 +53,15 @@ export function Navbar() {
               <div className="relative">
                 <div className="h-10 w-10 rounded-lg bg-white dark:bg-black border-2 border-gray-300 dark:border-gray-700 flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-sm group-hover:shadow-md overflow-hidden">
                   <Image
-                    src="/appicon_light.png"
-                    alt="HM Logo"
+                    src="/icon_light.png"
+                    alt="Haoming Logo"
                     width={24}
                     height={24}
                     className="h-6 w-6 object-contain dark:hidden"
                   />
                   <Image
-                    src="/appicon_dark.png"
-                    alt="HM Logo"
+                    src="/icon_dark.png"
+                    alt="Haoming Logo"
                     width={24}
                     height={24}
                     className="h-6 w-6 object-contain hidden dark:block"
