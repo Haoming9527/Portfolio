@@ -6,6 +6,8 @@ const IntroScene = dynamic(() => import("./IntroScene"), {
   ssr: false,
 });
 
-export default function DynamicIntroScene() {
-  return <IntroScene />;
+import { RefObject } from "react";
+
+export default function DynamicIntroScene({ eventSource }: { eventSource?: RefObject<HTMLElement> }) {
+  return <IntroScene eventSource={eventSource} />;
 }

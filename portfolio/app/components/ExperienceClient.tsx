@@ -15,6 +15,7 @@ function getColorClasses(color: string) {
   const colorMap: {
     [key: string]: {
       dot: string;
+      hover: string;
       text: string;
       bgLight: string;
       bgDark: string;
@@ -24,6 +25,7 @@ function getColorClasses(color: string) {
   } = {
     blue: {
       dot: "bg-blue-500",
+      hover: "group-hover:bg-blue-500 group-hover:text-blue-500",
       text: "text-blue-600",
       bgLight: "bg-blue-50",
       bgDark: "dark:bg-blue-900/20",
@@ -32,6 +34,7 @@ function getColorClasses(color: string) {
     },
     purple: {
       dot: "bg-purple-500",
+      hover: "group-hover:bg-purple-500 group-hover:text-purple-500",
       text: "text-purple-600",
       bgLight: "bg-purple-50",
       bgDark: "dark:bg-purple-900/20",
@@ -40,6 +43,7 @@ function getColorClasses(color: string) {
     },
     indigo: {
       dot: "bg-indigo-500",
+      hover: "group-hover:bg-indigo-500 group-hover:text-indigo-500",
       text: "text-indigo-600",
       bgLight: "bg-indigo-50",
       bgDark: "dark:bg-indigo-900/20",
@@ -48,6 +52,7 @@ function getColorClasses(color: string) {
     },
     green: {
       dot: "bg-green-500",
+      hover: "group-hover:bg-green-500 group-hover:text-green-500",
       text: "text-green-600",
       bgLight: "bg-green-50",
       bgDark: "dark:bg-green-900/20",
@@ -56,6 +61,7 @@ function getColorClasses(color: string) {
     },
     red: {
       dot: "bg-red-500",
+      hover: "group-hover:bg-red-500 group-hover:text-red-500",
       text: "text-red-600",
       bgLight: "bg-red-50",
       bgDark: "dark:bg-red-900/20",
@@ -64,6 +70,7 @@ function getColorClasses(color: string) {
     },
     orange: {
       dot: "bg-orange-500",
+      hover: "group-hover:bg-orange-500 group-hover:text-orange-500",
       text: "text-orange-600",
       bgLight: "bg-orange-50",
       bgDark: "dark:bg-orange-900/20",
@@ -119,10 +126,8 @@ export function ExperienceClient({
               const colors = getColorClasses(item.color);
               return (
                 <div key={idx} className="relative group pl-8 sm:pl-12">
-                   {/* Holo Dot */}
                   <div className="absolute left-0 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 -ml-4 flex items-center justify-center z-10 group-hover:scale-125 transition-transform duration-300">
-                    {/* Core */}
-                    <div className={`w-3 h-3 rounded-full ${colors.dot} shadow-[0_0_10px_currentColor] animate-pulse`} />
+                    <div className={`w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600 transition-all duration-300 shadow-none group-hover:shadow-[0_0_10px_currentColor] ${colors.hover}`} />
                   </div>
 
                   {item.url ? (
