@@ -127,7 +127,7 @@ export function ExperienceClient({
               return (
                 <div key={idx} className="relative group pl-8 sm:pl-12">
                   <div className="absolute left-0 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 -ml-4 flex items-center justify-center z-10 group-hover:scale-125 transition-transform duration-300">
-                    <div className={`w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600 transition-all duration-300 shadow-none group-hover:shadow-[0_0_10px_currentColor] ${colors.hover}`} />
+                    <div className={`w-3 h-3 rounded-full ${colors.dot} ${colors.text} transition-all duration-300 shadow-none group-hover:shadow-[0_0_10px_currentColor]`} />
                   </div>
 
                   {item.url ? (

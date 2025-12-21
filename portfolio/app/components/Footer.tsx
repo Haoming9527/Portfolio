@@ -80,7 +80,7 @@ export function Footer() {
               {[
                 { name: "Next.js", url: "https://nextjs.org" },
                 { name: "Tailwind", url: "https://tailwindcss.com" },
-                { name: "Supabase", url: "https://supabase.com" },
+                { name: "TypeScript", url: "https://www.typescriptlang.org" },
               ].map((tech) => (
                 <a
                   key={tech.name}
