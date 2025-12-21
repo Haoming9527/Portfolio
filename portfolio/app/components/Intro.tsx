@@ -7,7 +7,7 @@ import profile from "../../public/profile.jpg";
 import { Card, CardContent } from "@/components/ui/card";
 import { HackerName } from "./HackerName";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import DynamicIntroScene from "@/components/ui/3d/intro/DynamicIntroScene";
+import DynamicIntroScene from "@/components/3d/intro/DynamicIntroScene";
 
 export function Intro() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,7 +40,7 @@ export function Intro() {
       />
       <div ref={cardRef} className="intro-fade-in col-span-1 lg:col-span-5 h-full order-2 lg:order-1 relative">
         <Card className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-950/20 dark:to-purple-950/20 min-h-[400px] lg:min-h-[300px] border border-blue-200/50 dark:border-blue-700/50 relative overflow-hidden">
-          <DynamicIntroScene eventSource={cardRef as any} />
+          <DynamicIntroScene eventSource={cardRef} />
           <CardContent className="p-6 h-full flex flex-col justify-center relative z-10">
             <div className="max-w-lg">
               <div className="intro-fade-in">

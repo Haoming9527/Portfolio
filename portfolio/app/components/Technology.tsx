@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Technology as TechnologyType } from "../lib/interface";
 import { client } from "../lib/sanity";
-import DynamicTechScene from "@/components/ui/3d/technology/DynamicTechScene";
+import DynamicTechScene from "@/components/3d/technology/DynamicTechScene";
 import Image from "next/image";
 
 async function getTechnologyData() {

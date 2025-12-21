@@ -97,7 +97,7 @@ function ParticleSystem() {
   );
 }
 
-export default function IntroScene({ eventSource }: { eventSource?: RefObject<HTMLElement> }) {
+export default function IntroScene({ eventSource }: { eventSource?: RefObject<HTMLElement | null> }) {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
       <Canvas 
