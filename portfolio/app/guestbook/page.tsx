@@ -59,13 +59,13 @@ export default function GuestbookPage() {
         </div>
 
         <div className="space-y-8">
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+          <div>
             <Suspense fallback={<GuestBookFormLoading />}>
               <Form />
             </Suspense>
           </div>
 
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500">
+          <div className="mt-8">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

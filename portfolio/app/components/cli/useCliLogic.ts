@@ -11,7 +11,7 @@ import { getAvailableGames, getGame } from "./games/registry";
 const FILESYSTEM: Record<string, string[]> = {
   "/": ["home"],
   "/home": ["haoming"],
-  "/home/haoming": ["projects", "certificates", "experience", "about.md", "contact.txt"],
+  "/home/haoming": ["projects", "certificates", "about.md", "contact.txt"],
   "/home/haoming/projects": [], 
   "/home/haoming/certificates": [],
 };

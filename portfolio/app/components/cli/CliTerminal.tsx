@@ -8,11 +8,11 @@ import { MatrixRain } from "./MatrixRain";
 import { GAMES_REGISTRY } from "./games/registry";
 
 export function CliTerminal() {
-  const { isOpen, closeCli } = useCli();
+  const { isOpen, closeCli, isMinimized, setIsMinimized } = useCli();
   const { input, setInput, history, currentPath, handleKeyDown, isLoading, promptLabel, isMatrix, activeGame, setActiveGame } = useCliLogic();
   
   const [isMaximized, setIsMaximized] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
+
   
   // Window State
   const [pos, setPos] = useState({ x: 0, y: 0 }); 
@@ -145,7 +145,7 @@ export function CliTerminal() {
   // Reset minimized state when closed
   useEffect(() => {
     if (!isOpen) setIsMinimized(false);
-  }, [isOpen]);
+  }, [isOpen, setIsMinimized]);
 
   if (!isOpen) return null;
 

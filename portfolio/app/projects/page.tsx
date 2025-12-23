@@ -41,12 +41,11 @@ export default async function ProjectsPage() {
       </div>
       
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 grid-cols-1">
-        {data.map((item, index) => (
+        {data.map((item) => (
           <a
             href={item.link}
             key={item._id}
-            className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-4 duration-500"
-            style={{ animationDelay: `${index * 150}ms` }}
+            className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800"
             target="_blank"
           >
             <div className="aspect-[2/1] overflow-hidden rounded-2xl relative mb-6">

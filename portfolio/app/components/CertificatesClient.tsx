@@ -232,7 +232,7 @@ export default function CertificatesClient({
 
   return (
     <>
-      <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+      <div className="mb-8">
         <div className="hidden sm:block mb-8">
           <div className="max-w-lg mx-auto">
             <div className="relative group p-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 rounded-2xl hover:from-blue-500/30 hover:via-purple-500/30 hover:to-indigo-500/30 transition-all duration-300">
@@ -281,7 +281,7 @@ export default function CertificatesClient({
         </div>
       </div>
 
-      <div className="sm:hidden flex items-center gap-3 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+      <div className="sm:hidden flex items-center gap-3 mb-12">
         <button
           onClick={() => setIsFilterOpen(!isFilterOpen)}
           className="flex items-center justify-center gap-1 w-12 h-10 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 border-2 border-transparent"
@@ -313,7 +313,7 @@ export default function CertificatesClient({
       </div>
 
       {isFilterOpen && (
-        <div className="sm:hidden bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-lg mb-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="sm:hidden bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-lg mb-8">
           <div className="flex flex-wrap justify-center gap-3">
             {allTags.map((tag) => (
               <button
@@ -363,7 +363,7 @@ export default function CertificatesClient({
 
         if (currentFolder) {
           return (
-            <div ref={contentTopRef} className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-300 scroll-mt-24">
+            <div ref={contentTopRef} className="space-y-6 scroll-mt-24">
               <button
                 onClick={backToRoot}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm transition-all"
@@ -383,12 +383,12 @@ export default function CertificatesClient({
               </div>
 
               <div className="grid md:grid-cols-3 gap-8 grid-cols-1">
-                {currentFolder.certificates.map((cert, index) => (
+                {currentFolder.certificates.map((cert) => (
                   <div
                     key={cert._id}
                     onClick={() => handleCertificateClick(cert)}
                     className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 cursor-pointer"
-                    style={{ animationDelay: `${index * 50}ms` }}
+                    // Removed animation delay
                   >
                     <CertificateCard cert={cert} />
                   </div>
@@ -399,14 +399,14 @@ export default function CertificatesClient({
         } else {
           return (
             <div className="grid md:grid-cols-3 gap-8 grid-cols-1">
-              {allItems.map((item, index) => {
+              {allItems.map((item) => {
                 if (item.type === "folder") {
                   return (
                     <div
                       key={`folder-${item.company}`}
                       onClick={() => openFolder(item.company)}
-                      className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-4 duration-500 cursor-pointer"
-                      style={{ animationDelay: `${index * 100}ms` }}
+                      className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 cursor-pointer"
+                      // Removed animation delay
                     >
                       <FolderCard folder={item} />
                     </div>
@@ -416,8 +416,8 @@ export default function CertificatesClient({
                     <div
                       key={item.certificate._id}
                       onClick={() => handleCertificateClick(item.certificate)}
-                      className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-4 duration-500 cursor-pointer"
-                      style={{ animationDelay: `${index * 100}ms` }}
+                      className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 cursor-pointer"
+                      // Removed animation delay
                     >
                       <CertificateCard cert={item.certificate} />
                     </div>
@@ -463,7 +463,7 @@ export default function CertificatesClient({
             ✕
           </button>
 
-          <div className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row-reverse items-stretch animate-in fade-in slide-in-from-bottom-4 duration-300 mt-0 md:mt-0 max-h-[85vh] sm:max-h-[80vh]">
+          <div className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row-reverse items-stretch mt-0 md:mt-0 max-h-[85vh] sm:max-h-[80vh]">
             <div className="w-full md:w-2/3 flex items-center justify-center bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
               <div className="relative w-full flex items-center justify-center h-[50vh] sm:h-[60vh] md:h-[78vh]">
                 <Image
