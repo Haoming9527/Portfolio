@@ -76,7 +76,6 @@ export function useCliLogic() {
   };
 
   const ensureProjectsLoaded = async (): Promise<ProjectsCard[]> => {
-      if (projectsData) return projectsData;
 
       setIsLoading(true);
       try {
@@ -97,7 +96,6 @@ export function useCliLogic() {
   };
 
   const ensureCertificatesLoaded = async (): Promise<Certificate[]> => {
-      if (certificatesData) return certificatesData;
 
       setIsLoading(true);
       try {
