@@ -7,6 +7,8 @@ import { Footer } from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { BackToTop } from "./components/BackToTop";
 import { Chat } from "./components/Chat";
+import { CliProvider } from "./components/cli/CliContext";
+import { CliTerminal } from "./components/cli/CliTerminal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,15 +47,20 @@ export default function RootLayout({
           `}
         </Script>
 
+
+
         <ThemeProvider
           defaultTheme="system"
           storageKey="portfolio-theme"
         >
-          <Navbar/>
-          {children}
-          <Footer />
-          <BackToTop />
-          <Chat />
+          <CliProvider>
+            <Navbar/>
+            {children}
+            <Footer />
+            <BackToTop />
+            <Chat />
+            <CliTerminal />
+          </CliProvider>
         </ThemeProvider>
       </body>
     </html>

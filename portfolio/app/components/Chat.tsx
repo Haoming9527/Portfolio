@@ -73,7 +73,7 @@ export function Chat() {
   return (
     <div>
       {open && (
-        <Card className="fixed bottom-36 left-4 sm:left-6 md:left-8 z-50 w-[90vw] sm:w-64 md:w-72 lg:w-80 max-h-[60vh] sm:max-h-[320px] md:max-h-[360px] lg:max-h-[400px] flex flex-col animate-in fade-in slide-in-from-top-4 duration-700 overflow-hidden">
+        <Card className="fixed bottom-36 right-4 sm:right-6 md:right-8 z-50 w-[90vw] sm:w-64 md:w-72 lg:w-80 max-h-[60vh] sm:max-h-[320px] md:max-h-[360px] lg:max-h-[400px] flex flex-col animate-in fade-in slide-in-from-top-4 duration-700 overflow-hidden">
           <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
             {messages.map((m, i) => (
               <div
@@ -126,7 +126,7 @@ export function Chat() {
 
       <button
         onClick={toggleChat}
-        className={`fixed bottom-20 left-8 z-50 w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-lg flex items-center justify-center text-xl sm:text-2xl font-bold bg-blue-600 text-white transition-transform duration-300 ease-in-out hover:bg-blue-700 active:bg-blue-800 ${
+        className={`fixed bottom-20 right-8 z-50 w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-lg flex items-center justify-center text-xl sm:text-2xl font-bold bg-blue-600 text-white transition-transform duration-300 ease-in-out hover:bg-blue-700 active:bg-blue-800 ${
           spinning ? "rotate-180" : "rotate-0"
         }`}
         aria-label={open ? "Close chat" : "Open chat"}
