@@ -18,24 +18,48 @@ export function SnakeGame({ onExit }: SnakeGameProps) {
 
   const snake = useRef([{ x: 10, y: 10 }]);
   const food = useRef({ x: 15, y: 15 });
-  const dir = useRef({ x: 1, y: 0 }); // Moving right
+  const dir = useRef({ x: 1, y: 0 });
   const nextDir = useRef({ x: 1, y: 0 }); // Buffer for next move to prevent 180 turn
   const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (gameOver) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     
-    // Set size based on parent (approximate grid)
+
     const setupCanvas = () => {
         const parent = canvas.parentElement;
         if (parent) {
             canvas.width = Math.floor(parent.clientWidth / CELL_SIZE) * CELL_SIZE;
             canvas.height = Math.floor(parent.clientHeight / CELL_SIZE) * CELL_SIZE;
+            
+
+            const cols = canvas.width / CELL_SIZE;
+            const rows = canvas.height / CELL_SIZE;
+
+
+            if (food.current.x >= cols || food.current.y >= rows) {
+                 food.current = {
+                    x: Math.floor(Math.random() * cols),
+                    y: Math.floor(Math.random() * rows)
+                };
+            }
+            
+            // Clamp snake for safety
+            snake.current = snake.current.map(segment => ({
+                x: Math.min(segment.x, cols - 1),
+                y: Math.min(segment.y, rows - 1)
+            }));
         }
     };
     setupCanvas();
-    window.addEventListener('resize', setupCanvas);
+    
+    const observer = new ResizeObserver(setupCanvas);
+    if (canvas.parentElement) {
+        observer.observe(canvas.parentElement);
+    }
 
 
     const handleKey = (e: KeyboardEvent) => {
@@ -111,15 +135,15 @@ export function SnakeGame({ onExit }: SnakeGameProps) {
             snake.current.pop();
         }
 
-        // Draw
+
         ctx.fillStyle = '#000'; // BG
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw Food
+
         ctx.fillStyle = '#ff0000';
         ctx.fillRect(food.current.x * CELL_SIZE, food.current.y * CELL_SIZE, CELL_SIZE - 2, CELL_SIZE - 2);
 
-        // Draw Snake
+
         ctx.fillStyle = '#00ff00';
         snake.current.forEach(segment => {
             ctx.fillRect(segment.x * CELL_SIZE, segment.y * CELL_SIZE, CELL_SIZE - 2, CELL_SIZE - 2);
@@ -130,10 +154,10 @@ export function SnakeGame({ onExit }: SnakeGameProps) {
 
     return () => {
         window.removeEventListener('keydown', handleKey);
-        window.removeEventListener('resize', setupCanvas);
+        observer.disconnect();
         if (gameLoopRef.current) clearInterval(gameLoopRef.current);
     };
-  }, [onExit]); // Run once on mount
+  }, [onExit, gameOver]);
 
   return (
     <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center font-mono text-green-500">
@@ -143,26 +167,21 @@ export function SnakeGame({ onExit }: SnakeGameProps) {
                 <p className="text-xl">Score: {score}</p>
                 <div className="flex gap-4 justify-center">
                     <button 
-                        onClick={() => {
-                            // Reset
-                            setGameOver(false);
-                            setScore(0);
-                            const canvas = canvasRef.current;
-                            if (canvas) {
-                                snake.current = [{ x: 10, y: 10 }];
-                                dir.current = { x: 1, y: 0 };
-                                nextDir.current = { x: 1, y: 0 };
-                                // Re-trigger via exit for simplicity
-                                onExit();
-                            }
-                        }}
+                        onClick={onExit}
                         className="border border-green-500 px-4 py-2 hover:bg-green-500/20"
                     >
                         Exit
                     </button>
                     <button 
-                         onClick={() => window.location.reload()} // Hacky reset? No.
-                         className="border border-green-500 px-4 py-2 hover:bg-green-500/20 hidden"
+                         onClick={() => {
+                            setGameOver(false);
+                            setScore(0);
+                            snake.current = [{ x: 10, y: 10 }];
+                            dir.current = { x: 1, y: 0 };
+                            nextDir.current = { x: 1, y: 0 };
+                            food.current = { x: 15, y: 15 };
+                         }} 
+                         className="border border-green-500 px-4 py-2 hover:bg-green-500/20"
                     >
                         Retry
                     </button>

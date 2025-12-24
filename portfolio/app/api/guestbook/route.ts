@@ -3,14 +3,9 @@ import { prisma } from "../../lib/db";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import logger from "../../lib/logger";
-import { validateAndSanitize, securityHeaders } from "../../lib/security";
+import { validateAndSanitize } from "../../lib/security";
 
-function applySecurityHeaders(response: NextResponse): NextResponse {
-  Object.entries(securityHeaders).forEach(([key, value]) => {
-    response.headers.set(key, value);
-  });
-  return response;
-}
+
 
 async function getResolvedUserId(user: { id: string; email?: string | null }): Promise<string> {
   const dbUser = await prisma.user.findUnique({
@@ -54,11 +49,11 @@ export async function GET() {
     
     logger.info('Guestbook entries retrieved', { count: data.length });
     const response = NextResponse.json(data);
-    return applySecurityHeaders(response);
+    return response;
   } catch (error) {
     logger.error('Error retrieving guestbook entries', { error: error instanceof Error ? error.message : String(error) });
     const response = NextResponse.json({ error: "Internal server error" }, { status: 500 });
-    return applySecurityHeaders(response);
+    return response;
   }
 }
 
@@ -71,7 +66,7 @@ export async function POST(req: NextRequest) {
     if (!validation.isValid) {
       logger.warn('Invalid message attempt', { error: validation.error });
       const response = NextResponse.json({ error: validation.error }, { status: 400 });
-      return applySecurityHeaders(response);
+      return response;
     }
 
     const sanitizedMessage = validation.sanitized!;
@@ -82,7 +77,7 @@ export async function POST(req: NextRequest) {
     if (!user || !user.id) {
       logger.warn('Unauthorized POST attempt');
       const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      return applySecurityHeaders(response);
+      return response;
     }
 
     let username = 'User';
@@ -164,11 +159,11 @@ export async function POST(req: NextRequest) {
 
     revalidatePath("/guestbook");
     const response = NextResponse.json(entry);
-    return applySecurityHeaders(response);
+    return response;
   } catch (error) {
     logger.error('Error creating guestbook entry', { error: error instanceof Error ? error.message : String(error) });
     const response = NextResponse.json({ error: "Internal server error" }, { status: 500 });
-    return applySecurityHeaders(response);
+    return response;
   }
 }
 
@@ -181,7 +176,7 @@ export async function PUT(req: NextRequest) {
     if (!messageId) {
       logger.warn('PUT request without message ID');
       const response = NextResponse.json({ error: "Message ID is required" }, { status: 400 });
-      return applySecurityHeaders(response);
+      return response;
     }
 
     const { message } = await req.json();
@@ -190,7 +185,7 @@ export async function PUT(req: NextRequest) {
     if (!validation.isValid) {
       logger.warn('Invalid message in PUT request', { error: validation.error });
       const response = NextResponse.json({ error: validation.error }, { status: 400 });
-      return applySecurityHeaders(response);
+      return response;
     }
 
     const sanitizedMessage = validation.sanitized!;
@@ -201,7 +196,7 @@ export async function PUT(req: NextRequest) {
     if (!user || !user.id) {
       logger.warn('Unauthorized PUT attempt');
       const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      return applySecurityHeaders(response);
+      return response;
     }
 
     const resolvedUserId = await getResolvedUserId(user);
@@ -213,7 +208,7 @@ export async function PUT(req: NextRequest) {
     if (!existingEntry || existingEntry.userId !== resolvedUserId) {
       logger.warn('Unauthorized message modification attempt');
       const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      return applySecurityHeaders(response);
+      return response;
     }
 
     const updatedEntry = await prisma.guestBookEntry.update({
@@ -233,11 +228,11 @@ export async function PUT(req: NextRequest) {
 
     revalidatePath("/guestbook");
     const response = NextResponse.json(updatedEntry);
-    return applySecurityHeaders(response);
+    return response;
   } catch (error) {
     logger.error('Error updating guestbook entry', { error: error instanceof Error ? error.message : String(error) });
     const response = NextResponse.json({ error: "Internal server error" }, { status: 500 });
-    return applySecurityHeaders(response);
+    return response;
   }
 }
 
@@ -250,7 +245,7 @@ export async function DELETE(req: NextRequest) {
     if (!messageId) {
       logger.warn('DELETE request without message ID');
       const response = NextResponse.json({ error: "Message ID is required" }, { status: 400 });
-      return applySecurityHeaders(response);
+      return response;
     }
 
     const { getUser } = getKindeServerSession();
@@ -259,7 +254,7 @@ export async function DELETE(req: NextRequest) {
     if (!user || !user.id) {
       logger.warn('Unauthorized DELETE attempt');
       const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      return applySecurityHeaders(response);
+      return response;
     }
 
     const resolvedUserId = await getResolvedUserId(user);
@@ -271,7 +266,7 @@ export async function DELETE(req: NextRequest) {
     if (!existingEntry || existingEntry.userId !== resolvedUserId) {
       logger.warn('Unauthorized message deletion attempt');
       const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      return applySecurityHeaders(response);
+      return response;
     }
 
     await prisma.guestBookEntry.delete({
@@ -282,10 +277,10 @@ export async function DELETE(req: NextRequest) {
 
     revalidatePath("/guestbook");
     const response = NextResponse.json({ success: true });
-    return applySecurityHeaders(response);
+    return response;
   } catch (error) {
     logger.error('Error deleting guestbook entry', { error: error instanceof Error ? error.message : String(error) });
     const response = NextResponse.json({ error: "Internal server error" }, { status: 500 });
-    return applySecurityHeaders(response);
+    return response;
   }
 }
