@@ -67,7 +67,7 @@ export function MessageActions({
     setError(null);
 
     try {
-      const response = await fetch(`/api/guestbook?id=${messageId}`, {
+      const response = await fetch(`/api/guestbook/${messageId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -107,7 +107,7 @@ export function MessageActions({
     setError(null);
 
     try {
-      const response = await fetch(`/api/guestbook?id=${messageId}`, {
+      const response = await fetch(`/api/guestbook/${messageId}`, {
         method: "DELETE",
       });
 
