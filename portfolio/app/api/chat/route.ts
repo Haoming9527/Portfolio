@@ -92,13 +92,15 @@ export async function POST(req: Request) {
     let reply = result?.response?.text() || "No reply";
     reply = trimTo100Words(reply);
     return NextResponse.json({ reply });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Gemini error:", err);
     
+    // Check if it's a 503 overloaded error based on status or message
+    const errorObj = err as { status?: number; message?: string };
     const isOverloaded = 
-      err?.status === 503 || 
-      err?.message?.includes("503") || 
-      err?.message?.includes("model is overloaded");
+      errorObj?.status === 503 || 
+      errorObj?.message?.includes("503") || 
+      errorObj?.message?.includes("model is overloaded");
 
     if (isOverloaded) {
       return NextResponse.json(
