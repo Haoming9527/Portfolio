@@ -95,7 +95,6 @@ export async function POST(req: Request) {
   } catch (err: unknown) {
     console.error("Gemini error:", err);
     
-    // Check if it's a 503 overloaded error based on status or message
     const errorObj = err as { status?: number; message?: string };
     const isOverloaded = 
       errorObj?.status === 503 || 
@@ -106,7 +105,6 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { 
           error: { 
-            code: "MODEL_OVERLOADED",
             message: "The AI model is currently overloaded. Please try again in a moment." 
           } 
         },
@@ -114,9 +112,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const message = err instanceof Error ? err.message : "Internal server error";
     return NextResponse.json(
-      { error: { message } },
+      { error: { message: "Unexpected error occur" } },
       { status: 500 }
     );
   }
