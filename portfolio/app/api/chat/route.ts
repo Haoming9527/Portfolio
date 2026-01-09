@@ -92,9 +92,27 @@ export async function POST(req: Request) {
     let reply = result?.response?.text() || "No reply";
     reply = trimTo100Words(reply);
     return NextResponse.json({ reply });
-  } catch (err: unknown) {
+  } catch (err: any) {
     console.error("Gemini error:", err);
-    const message = err instanceof Error ? err.message : "Gemini server error";
+    
+    const isOverloaded = 
+      err?.status === 503 || 
+      err?.message?.includes("503") || 
+      err?.message?.includes("model is overloaded");
+
+    if (isOverloaded) {
+      return NextResponse.json(
+        { 
+          error: { 
+            code: "MODEL_OVERLOADED",
+            message: "The AI model is currently overloaded. Please try again in a moment." 
+          } 
+        },
+        { status: 503 }
+      );
+    }
+
+    const message = err instanceof Error ? err.message : "Internal server error";
     return NextResponse.json(
       { error: { message } },
       { status: 500 }

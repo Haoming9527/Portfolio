@@ -51,9 +51,17 @@ export function Chat() {
       });
 
       const data = await res.json();
-      const botMessageContent = data.error
-        ? data.error.message || "An error occurred."
-        : data.reply || "No reply";
+      let botMessageContent = "No reply";
+
+      if (data.error) {
+        if (data.error.code === "MODEL_OVERLOADED") {
+          botMessageContent = "The AI is currently overloaded. Please wait a moment and try again.";
+        } else {
+          botMessageContent = data.error.message || "An error occurred.";
+        }
+      } else if (data.reply) {
+        botMessageContent = data.reply;
+      }
 
       setMessages((prev) => [
         ...prev.filter((m) => m.role !== "assistant" || m.content !== ""),
