@@ -260,7 +260,8 @@ export function CliTerminal() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            className="flex-1 bg-transparent border-none outline-none text-green-400 placeholder-green-800 font-inherit caret-green-500"
+                            disabled={!!activeGame}
+                            className="flex-1 bg-transparent border-none outline-none text-green-400 placeholder-green-800 font-inherit caret-green-500 disabled:opacity-50"
                             autoComplete="off"
                             spellCheck="false"
                             autoFocus

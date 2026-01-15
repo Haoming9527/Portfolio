@@ -95,13 +95,10 @@ export async function POST(req: Request) {
   } catch (err: unknown) {
     console.error("Gemini error:", err);
     
-    const errorObj = err as { status?: number; message?: string };
-    const isOverloaded = 
-      errorObj?.status === 503 || 
-      errorObj?.message?.includes("503") || 
-      errorObj?.message?.includes("model is overloaded");
-
-    if (isOverloaded) {
+    const errorObj = err as { status?: number; response?: { status?: number } };
+    const status = errorObj?.status || errorObj?.response?.status;
+    
+    if (status == 503) {
       return NextResponse.json(
         { 
           error: { 
@@ -109,6 +106,17 @@ export async function POST(req: Request) {
           } 
         },
         { status: 503 }
+      );
+    }
+
+    if (status == 429) {
+      return NextResponse.json(
+        { 
+          error: { 
+            message: "I've reached my rate limit and am temporarily unavailable." 
+          } 
+        },
+        { status: 429 }
       );
     }
 
