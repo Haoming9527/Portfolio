@@ -1,10 +1,10 @@
 # 🚀 Portfolio
 
-A modern, full-stack portfolio website built with Next.js 15, featuring dynamic content management, user authentication, and interactive components.
+A modern, full-stack portfolio website built with Next.js 16, featuring dynamic content management, user authentication, and interactive components.
 
-![Portfolio Preview](https://img.shields.io/badge/Next.js-15.5.0-black?style=for-the-badge&logo=next.js)
-![React](https://img.shields.io/badge/React-19.1.0-blue?style=for-the-badge&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
+![Portfolio Preview](https://img.shields.io/badge/Next.js-16.1.6-black?style=for-the-badge&logo=next.js)
+![React](https://img.shields.io/badge/React-19.2.3-blue?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?style=for-the-badge&logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)
 
 ## ✨ Features
@@ -45,7 +45,7 @@ A modern, full-stack portfolio website built with Next.js 15, featuring dynamic 
 ## 🚀 Tech Stack
 
 ### Frontend
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js 16 with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4.0
 - **UI Components**: Radix UI primitives
@@ -128,7 +128,7 @@ A modern, full-stack portfolio website built with Next.js 15, featuring dynamic 
 ## 📁 Project Structure
 
 ```
-portfolio/
+.
 ├── app/                    # Next.js App Router
 │   ├── api/               # API routes
 │   ├── components/        # React components
@@ -137,7 +137,7 @@ portfolio/
 │   ├── certificates/     # Certificates page
 │   └── guestbook/        # Guestbook page
 ├── components/           # Shared UI components
-├── lib/                 # Generated Prisma client
+├── lib/                 # Shared libraries and Prisma client
 ├── prisma/              # Database schema
 ├── sanity/              # Sanity CMS configuration
 └── public/              # Static assets
