@@ -63,6 +63,9 @@ export function SnakeGame({ onExit }: SnakeGameProps) {
 
 
     const handleKey = (e: KeyboardEvent) => {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+        }
         switch(e.key) {
             case 'ArrowUp':
                 if (dir.current.y === 0) nextDir.current = { x: 0, y: -1 };
@@ -150,10 +153,24 @@ export function SnakeGame({ onExit }: SnakeGameProps) {
         });
     };
 
+    const handlePointerDown = (e: PointerEvent) => {
+        if (gameOver || (e.target as HTMLElement).tagName === 'BUTTON') return;
+        const current = nextDir.current;
+        // Turn Clockwise: R(1,0) -> D(0,1) -> L(-1,0) -> U(0,-1)
+        if (current.x === 1 && current.y === 0) nextDir.current = { x: 0, y: 1 };
+        else if (current.x === 0 && current.y === 1) nextDir.current = { x: -1, y: 0 };
+        else if (current.x === -1 && current.y === 0) nextDir.current = { x: 0, y: -1 };
+        else if (current.x === 0 && current.y === -1) nextDir.current = { x: 1, y: 0 };
+    };
+
+    window.addEventListener('keydown', handleKey);
+    window.addEventListener('pointerdown', handlePointerDown);
+
     gameLoopRef.current = setInterval(tick, SPEED);
 
     return () => {
         window.removeEventListener('keydown', handleKey);
+        window.removeEventListener('pointerdown', handlePointerDown);
         observer.disconnect();
         if (gameLoopRef.current) clearInterval(gameLoopRef.current);
     };
@@ -191,7 +208,11 @@ export function SnakeGame({ onExit }: SnakeGameProps) {
         ) : (
             <>
                 <div className="absolute top-4 left-4 text-xl font-bold opacity-50">SCORE: {score}</div>
-                <div className="absolute top-4 right-4 text-xs opacity-50">ARROWS to move | ESC/Q to quit</div>
+                <div className="absolute top-4 right-4 text-xs opacity-50 text-right">
+                    ARROWS: Move<br/>
+                    CLICK: Turn CW<br/>
+                    ESC / Q: Quit
+                </div>
                 <canvas ref={canvasRef} className="max-w-full max-h-full" />
             </>
         )}

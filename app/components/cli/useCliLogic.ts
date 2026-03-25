@@ -5,7 +5,13 @@ import { useCli } from "./CliContext";
 import { getProjects } from "../../actions/getProjects";
 import { getCertificates } from "../../actions/getCertificates";
 import { ProjectsCard, Certificate } from "../../lib/interface";
-import { getAvailableGames, getGame } from "./games/registry";
+
+const AVAILABLE_GAMES: Record<string, { description: string }> = {
+    snake: { description: "Classic Snake Game" },
+    tetris: { description: "Block-stacking puzzle game" },
+    asteroids: { description: "Space shooter arcade game" },
+    gomoku: { description: "Five in a Row strategy game" }
+};
 
 
 const FILESYSTEM: Record<string, string[]> = {
@@ -39,11 +45,13 @@ const EXTERNAL_LINKS: Record<string, string> = {
   email: "mailto:lbb54188@gmail.com",
 };
 
+const INITIAL_HISTORY = ["Welcome to Shen Haoming's CLI", "Type 'help' to see available commands."];
+
 export function useCliLogic() {
-  const { closeCli } = useCli();
+  const { isOpen, closeCli } = useCli();
   
   const [input, setInput] = useState("");
-  const [history, setHistory] = useState<string[]>(["Welcome to Shen Haoming's CLI", "Type 'help' to see available commands."]);
+  const [history, setHistory] = useState<string[]>(INITIAL_HISTORY);
   const [currentPath, setCurrentPath] = useState("/home/haoming");
   const [cmdHistory, setCmdHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -55,6 +63,18 @@ export function useCliLogic() {
   const [isLoading, setIsLoading] = useState(false);
   const [isMatrix, setIsMatrix] = useState(false);
   const [activeGame, setActiveGame] = useState<string | null>(null);
+
+  // Reset terminal state when window is closed
+  useEffect(() => {
+    if (!isOpen) {
+        setActiveGame(null);
+        setHistory(INITIAL_HISTORY);
+        setInput("");
+        setIsMatrix(false);
+        setHistoryIndex(-1);
+        setCurrentPath("/home/haoming");
+    }
+  }, [isOpen]);
 
 
   const promptLabel = activePrompt ? "> " : `${currentPath} $ `;
@@ -328,13 +348,15 @@ export function useCliLogic() {
          break;
 
        case "game":
-          const avail = getAvailableGames();
-          if (args[0] && avail.includes(args[0])) {
-              setActiveGame(args[0]);
-              addToHistory([`Starting ${args[0]}...`]);
+          const avail = Object.keys(AVAILABLE_GAMES);
+          const gameName = args[0]?.toLowerCase();
+          
+          if (gameName && avail.includes(gameName)) {
+              setActiveGame(gameName);
+              addToHistory([`Starting ${gameName}...`]);
           } else {
               const list = avail.map(id => {
-                  const g = getGame(id);
+                  const g = AVAILABLE_GAMES[id];
                   return `> ${id.padEnd(8)} - ${g?.description || ''}`;
               });
               addToHistory(["Available Games:", ...list, `(Type 'game <name>' to play)`]);

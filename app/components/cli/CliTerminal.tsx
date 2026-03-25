@@ -3,9 +3,12 @@
 import { useRef, useState, useEffect } from "react";
 import { useCli } from "./CliContext";
 import { useCliLogic } from "./useCliLogic";
-import { X, Minus, Maximize2, Terminal, Loader2 } from "lucide-react";
+import { X, Minus, Maximize2, Minimize2, Terminal, Loader2 } from "lucide-react";
 import { MatrixRain } from "./MatrixRain";
-import { GAMES_REGISTRY } from "./games/registry";
+import { SnakeGame } from "./games/SnakeGame";
+import { TetrisGame } from "./games/TetrisGame";
+import { AsteroidsGame } from "./games/AsteroidsGame";
+import { GomokuGame } from "./games/GomokuGame";
 
 export function CliTerminal() {
   const { isOpen, closeCli, isMinimized, setIsMinimized } = useCli();
@@ -57,6 +60,30 @@ export function CliTerminal() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [history, isOpen]);
 
+  // Reset minimized state when closed
+  useEffect(() => {
+    if (!isOpen) setIsMinimized(false);
+  }, [isOpen, setIsMinimized]);
+
+  // Game specific minimum sizes
+  const MIN_GAME_SIZES: Record<string, { w: number, h: number }> = {
+    snake: { w: 450, h: 450 },
+    tetris: { w: 400, h: 600 },
+    asteroids: { w: 600, h: 650 },
+    gomoku: { w: 550, h: 600 },
+  };
+
+  // Auto-expand window for games
+  useEffect(() => {
+    if (activeGame && MIN_GAME_SIZES[activeGame]) {
+        const min = MIN_GAME_SIZES[activeGame];
+        setSize(prev => ({
+            w: Math.max(prev.w, min.w),
+            h: Math.max(prev.h, min.h)
+        }));
+    }
+  }, [activeGame]);
+
   // Global Mouse Move/Up Handler (Optimized with RAF & Refs)
   useEffect(() => {
     if (!isDragging && !resizeDir) return;
@@ -73,14 +100,25 @@ export function CliTerminal() {
             const dy = e.clientY - smy;
 
             if (isDragging) {
-                setPos({ x: sx + dx, y: sy + dy });
+                const newY = sy + dy;
+                const maxY = window.innerHeight - 40; // Ensure header stays visible
+                setPos({ 
+                    x: sx + dx, 
+                    y: Math.max(0, Math.min(newY, maxY))
+                });
                 return;
             }
 
             if (resizeDir) {
-                const minW = window.innerWidth < 640 ? 250 : 400; 
-                const minH = 200;
+                // Determine limits: base terminal limits vs active game limits
+                let minW = window.innerWidth < 640 ? 280 : 400; 
+                let minH = 250;
                 
+                if (activeGame && MIN_GAME_SIZES[activeGame]) {
+                    minW = Math.max(minW, MIN_GAME_SIZES[activeGame].w);
+                    minH = Math.max(minH, MIN_GAME_SIZES[activeGame].h);
+                }
+
                 let newX = sx;
                 let newY = sy;
                 let newW = sw;
@@ -119,7 +157,7 @@ export function CliTerminal() {
         window.removeEventListener("mousemove", handleMouseMove);
         window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, resizeDir]); // No deps on pos/size!
+  }, [isDragging, resizeDir, activeGame]); // added activeGame here for correctness
 
   const startDrag = (e: React.MouseEvent) => {
       if (isMaximized) return;
@@ -141,11 +179,6 @@ export function CliTerminal() {
           mx: e.clientX, my: e.clientY
       };
   };
-
-  // Reset minimized state when closed
-  useEffect(() => {
-    if (!isOpen) setIsMinimized(false);
-  }, [isOpen, setIsMinimized]);
 
   if (!isOpen) return null;
 
@@ -210,13 +243,17 @@ export function CliTerminal() {
                         <Minus className="w-2 h-2 text-[#995700] opacity-0 group-hover:opacity-100" strokeWidth={3} />
                      </div>
                      
-                     {/* Green: Maximize */}
+                     {/* Green: Maximize/Restore */}
                      <div 
                         className="w-3 h-3 rounded-full bg-[#28C840] hover:bg-[#28C840] cursor-pointer transition-all group flex items-center justify-center border border-black/10" 
                         onClick={() => setIsMaximized(!isMaximized)}
-                        title="Maximize"
+                        title={isMaximized ? "Restore" : "Maximize"}
                      >
-                        <Maximize2 className="w-1.5 h-1.5 text-[#006500] opacity-0 group-hover:opacity-100" strokeWidth={3} />
+                        {isMaximized ? (
+                            <Minimize2 className="w-1.5 h-1.5 text-[#006500] opacity-0 group-hover:opacity-100" strokeWidth={3} />
+                        ) : (
+                            <Maximize2 className="w-1.5 h-1.5 text-[#006500] opacity-0 group-hover:opacity-100" strokeWidth={3} />
+                        )}
                      </div>
                  </div>
                  <div className="text-gray-400 text-xs font-semibold">user@portfolio:{currentPath}</div>
@@ -231,12 +268,26 @@ export function CliTerminal() {
             )}
 
 
-            {activeGame && GAMES_REGISTRY[activeGame] && (
+            {activeGame === 'snake' && (
                  <div className="absolute inset-0 top-[32px] z-10 rounded-bl-lg overflow-hidden">
-                    {(() => {
-                        const GameComponent = GAMES_REGISTRY[activeGame].component;
-                        return <GameComponent onExit={() => setActiveGame(null)} />;
-                    })()}
+                    <SnakeGame onExit={() => setActiveGame(null)} />
+                </div>
+            )}
+            {activeGame === 'tetris' && (
+                 <div className="absolute inset-0 top-[32px] z-10 rounded-bl-lg overflow-hidden">
+                    <TetrisGame onExit={() => setActiveGame(null)} />
+                </div>
+            )}
+            {activeGame === 'asteroids' && (
+                 <div className="absolute inset-0 top-[32px] z-10 rounded-bl-lg overflow-hidden">
+                    <AsteroidsGame onExit={() => setActiveGame(null)} />
+                </div>
+            )}
+            {activeGame === 'gomoku' && (
+                 <div className="absolute inset-0 top-[32px] z-10 rounded-bl-lg overflow-hidden">
+                    <GomokuGame 
+                        onExit={() => setActiveGame(null)} 
+                    />
                 </div>
             )}
 
