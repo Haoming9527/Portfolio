@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { DataConnection } from "peerjs";
+import type { DataConnection, Peer } from "peerjs";
 
 interface GomokuProps {
   onExit: () => void;
@@ -28,7 +28,7 @@ export function GomokuGame({ onExit }: GomokuProps) {
   const [peerError, setPeerError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const peerRef = useRef<any>(null);
+  const peerRef = useRef<Peer | null>(null);
   const connRef = useRef<DataConnection | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -50,7 +50,7 @@ export function GomokuGame({ onExit }: GomokuProps) {
         return;
     }
 
-    let peerInstance: any = null;
+    let peerInstance: Peer | null = null;
 
     const initPeer = async () => {
         const PeerJS = (await import("peerjs")).default;
@@ -80,18 +80,19 @@ export function GomokuGame({ onExit }: GomokuProps) {
                 connection.on('open', onConnectionOpen);
             }
 
-            connection.on('data', (data: any) => {
-                if (data.type === 'move') {
-                    setBoard(data.board);
-                    setCurrentPlayer(data.nextPlayer);
-                    if (data.winner) setWinner(data.winner);
-                } else if (data.type === 'init') {
-                    setBoard(data.board);
+            connection.on('data', (data: unknown) => { 
+                const gameData = data as { type: string; board?: number[][]; nextPlayer?: number; winner?: number | null; };
+                if (gameData.type === 'move') {
+                    if (gameData.board) setBoard(gameData.board);
+                    if (gameData.nextPlayer) setCurrentPlayer(gameData.nextPlayer);
+                    if (gameData.winner !== undefined) setWinner(gameData.winner);
+                } else if (gameData.type === 'init') {
+                    if (gameData.board) setBoard(gameData.board);
                     setIsReady(true);
-                } else if (data.type === 'room-full') {
+                } else if (gameData.type === 'room-full') {
                     setPeerError("This room is already full (2 players max).");
                     setTimeout(() => resetToLobby(), 2000);
-                } else if (data.type === 'reset') {
+                } else if (gameData.type === 'reset') {
                     setBoard(Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)));
                     setWinner(null);
                     setCurrentPlayer(1);
@@ -126,7 +127,7 @@ export function GomokuGame({ onExit }: GomokuProps) {
             }
         });
 
-        peer.on('error', (err: any) => {
+        peer.on('error', (err: { type: string }) => {
             if (err.type === 'peer-unavailable') {
                 setPeerError("This Room Code doesn't exist. Please check it and try again.");
             } else if (err.type === 'server-error' || err.type === 'network') {
@@ -163,7 +164,7 @@ export function GomokuGame({ onExit }: GomokuProps) {
       if (peerInstance) peerInstance.destroy();
       window.removeEventListener('beforeunload', handleUnload);
     };
-  }, [mode, joinCodeInput]);
+  }, [mode, joinCodeInput, isReady, winner]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -206,7 +207,8 @@ export function GomokuGame({ onExit }: GomokuProps) {
 
   const checkWin = (b: number[][], x: number, y: number, player: number) => {
     const dirs = [[[1,0],[-1,0]], [[0,1],[0,-1]], [[1,1],[-1,-1]], [[1,-1],[-1,1]]];
-    for (let { [0]: dir1, [1]: dir2 } of dirs) {
+    for (const dirPair of dirs) {
+      const [dir1, dir2] = dirPair;
       let count = 1;
       let cx = x + dir1[0], cy = y + dir1[1];
       while (cx >= 0 && cx < BOARD_SIZE && cy >= 0 && cy < BOARD_SIZE && b[cy][cx] === player) {
@@ -243,7 +245,7 @@ export function GomokuGame({ onExit }: GomokuProps) {
       newBoard[row][col] = currentPlayer;
       setBoard(newBoard);
       
-      let finalWinner = null;
+      let finalWinner: number | null = null;
       if (checkWin(newBoard, col, row, currentPlayer)) {
         finalWinner = currentPlayer;
         setWinner(currentPlayer);
@@ -426,7 +428,7 @@ export function GomokuGame({ onExit }: GomokuProps) {
               
               <div className="absolute top-4 left-4 text-sm font-bold opacity-80 flex flex-col gap-1 border-l-2 border-green-900 pl-3">
                   <div className="uppercase tracking-widest">
-                    {currentPlayer === 1 ? 'BLACK' : 'WHITE'}'S TURN
+                    {currentPlayer === 1 ? 'BLACK' : 'WHITE'}&apos;S TURN
                   </div>
                   {mode !== 'local' && (
                       <div className="text-[10px] text-green-700 font-normal">
@@ -441,7 +443,7 @@ export function GomokuGame({ onExit }: GomokuProps) {
                   {mode !== 'local' && isReady && currentPlayer !== myPlayerNumber && !winner && (
                       <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none bg-black/10 transition-all">
                           <div className="bg-black/60 backdrop-blur-md px-8 py-4 rounded-full border border-green-500/30 animate-pulse shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-                              <span className="text-lg font-bold tracking-widest text-green-400 uppercase">Wait for the other player...</span>
+                              <span className="text-lg font-bold tracking-widest text-green-400 uppercase">Wait for the other player&apos;s turn...</span>
                           </div>
                       </div>
                   )}

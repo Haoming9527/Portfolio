@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface TetrisProps {
   onExit: () => void;
@@ -8,7 +8,6 @@ interface TetrisProps {
 
 const COLS = 10;
 const ROWS = 20;
-const BLOCK_SIZE = 20;
 const COLORS = [
   null,
   "#FF0D72", // I
@@ -41,6 +40,7 @@ export function TetrisGame({ onExit }: TetrisProps) {
   const dropIntervalRef = useRef(1000);
 
   const arenaRef = useRef<number[][]>(Array.from({ length: ROWS }, () => Array(COLS).fill(0)));
+  const pointerStartRef = useRef<{ x: number, y: number } | null>(null);
   const playerRef = useRef({
     pos: { x: 0, y: 0 },
     matrix: [] as number[][],
@@ -50,18 +50,7 @@ export function TetrisGame({ onExit }: TetrisProps) {
     return SHAPES[type];
   };
 
-  const playerReset = () => {
-    const pieces = [1, 2, 3, 4, 5, 6, 7];
-    playerRef.current.matrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
-    playerRef.current.pos.y = 0;
-    playerRef.current.pos.x = Math.floor(COLS / 2) - Math.floor(playerRef.current.matrix[0].length / 2);
-    
-    if (collide(arenaRef.current, playerRef.current)) {
-      setGameOver(true);
-    }
-  };
-
-  const collide = (arena: number[][], player: { pos: { x: number, y: number }, matrix: number[][] }) => {
+  const collide = useCallback((arena: number[][], player: { pos: { x: number, y: number }, matrix: number[][] }) => {
     const m = player.matrix;
     const o = player.pos;
     for (let y = 0; y < m.length; ++y) {
@@ -72,7 +61,7 @@ export function TetrisGame({ onExit }: TetrisProps) {
       }
     }
     return false;
-  };
+  }, []);
 
   const merge = (arena: number[][], player: { pos: { x: number, y: number }, matrix: number[][] }) => {
     player.matrix.forEach((row, y) => {
@@ -84,53 +73,7 @@ export function TetrisGame({ onExit }: TetrisProps) {
     });
   };
 
-  const playerDrop = () => {
-    playerRef.current.pos.y++;
-    if (collide(arenaRef.current, playerRef.current)) {
-      playerRef.current.pos.y--;
-      merge(arenaRef.current, playerRef.current);
-      playerReset();
-      arenaSweep();
-    }
-    dropCounterRef.current = 0;
-  };
-
-  const playerMove = (offset: number) => {
-    playerRef.current.pos.x += offset;
-    if (collide(arenaRef.current, playerRef.current)) {
-      playerRef.current.pos.x -= offset;
-    }
-  };
-
-  const playerRotate = (dir: number) => {
-    const pos = playerRef.current.pos.x;
-    let offset = 1;
-    rotate(playerRef.current.matrix, dir);
-    while (collide(arenaRef.current, playerRef.current)) {
-      playerRef.current.pos.x += offset;
-      offset = -(offset + (offset > 0 ? 1 : -1));
-      if (offset > playerRef.current.matrix[0].length) {
-        rotate(playerRef.current.matrix, -dir);
-        playerRef.current.pos.x = pos;
-        return;
-      }
-    }
-  };
-
-  const rotate = (matrix: number[][], dir: number) => {
-    for (let y = 0; y < matrix.length; ++y) {
-      for (let x = 0; x < y; ++x) {
-        [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
-      }
-    }
-    if (dir > 0) {
-      matrix.forEach(row => row.reverse());
-    } else {
-      matrix.reverse();
-    }
-  };
-
-  const arenaSweep = () => {
+  const arenaSweep = useCallback(() => {
     let rowCount = 1;
     let newScore = 0;
     outer: for (let y = arenaRef.current.length - 1; y >= 0; --y) {
@@ -149,7 +92,64 @@ export function TetrisGame({ onExit }: TetrisProps) {
       setScore(s => s + newScore);
       dropIntervalRef.current = Math.max(100, dropIntervalRef.current - 10);
     }
-  };
+  }, []);
+
+  const playerReset = useCallback(() => {
+    const pieces = [1, 2, 3, 4, 5, 6, 7];
+    playerRef.current.matrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
+    playerRef.current.pos.y = 0;
+    playerRef.current.pos.x = Math.floor(COLS / 2) - Math.floor(playerRef.current.matrix[0].length / 2);
+    
+    if (collide(arenaRef.current, playerRef.current)) {
+      setGameOver(true);
+    }
+  }, [collide]);
+
+  const playerDrop = useCallback(() => {
+    playerRef.current.pos.y++;
+    if (collide(arenaRef.current, playerRef.current)) {
+      playerRef.current.pos.y--;
+      merge(arenaRef.current, playerRef.current);
+      playerReset();
+      arenaSweep();
+    }
+    dropCounterRef.current = 0;
+  }, [collide, playerReset, arenaSweep]);
+
+  const playerMove = useCallback((offset: number) => {
+    playerRef.current.pos.x += offset;
+    if (collide(arenaRef.current, playerRef.current)) {
+      playerRef.current.pos.x -= offset;
+    }
+  }, [collide]);
+
+  const rotate = useCallback((matrix: number[][], dir: number) => {
+    for (let y = 0; y < matrix.length; ++y) {
+      for (let x = 0; x < y; ++x) {
+        [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+      }
+    }
+    if (dir > 0) {
+      matrix.forEach(row => row.reverse());
+    } else {
+      matrix.reverse();
+    }
+  }, []);
+
+  const playerRotate = useCallback((dir: number) => {
+    const pos = playerRef.current.pos.x;
+    let offset = 1;
+    rotate(playerRef.current.matrix, dir);
+    while (collide(arenaRef.current, playerRef.current)) {
+      playerRef.current.pos.x += offset;
+      offset = -(offset + (offset > 0 ? 1 : -1));
+      if (offset > playerRef.current.matrix[0].length) {
+        rotate(playerRef.current.matrix, -dir);
+        playerRef.current.pos.x = pos;
+        return;
+      }
+    }
+  }, [collide, rotate]);
 
   useEffect(() => {
     if (gameOver) return;
@@ -266,25 +266,39 @@ export function TetrisGame({ onExit }: TetrisProps) {
     };
 
     const handlePointerDown = (e: PointerEvent) => {
-      // Rotate if clicking on the canvas
       if (!gameOver && e.target === canvas) {
-        playerRotate(1);
+        pointerStartRef.current = { x: e.clientX, y: e.clientY };
       }
+    };
+
+    const handlePointerUp = (e: PointerEvent) => {
+      if (!gameOver && pointerStartRef.current) {
+        const dx = Math.abs(e.clientX - pointerStartRef.current.x);
+        const dy = Math.abs(e.clientY - pointerStartRef.current.y);
+        
+        // If the movement is very small, we treat it as a tap/click to rotate
+        if (dx < 10 && dy < 10) {
+          playerRotate(1);
+        }
+      }
+      pointerStartRef.current = null;
     };
 
     window.addEventListener("keydown", handleKey);
     window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointerup", handlePointerUp);
     canvas.addEventListener("pointermove", handlePointerMove);
     requestRef.current = requestAnimationFrame(update);
 
     return () => {
       window.removeEventListener("keydown", handleKey);
       window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerup", handlePointerUp);
       canvas.removeEventListener("pointermove", handlePointerMove);
       cancelAnimationFrame(requestRef.current);
       observer.disconnect();
     };
-  }, [gameOver, onExit]);
+  }, [gameOver, onExit, playerDrop, playerMove, playerReset, playerRotate, collide, arenaSweep]);
 
   return (
     <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center font-mono text-green-500">

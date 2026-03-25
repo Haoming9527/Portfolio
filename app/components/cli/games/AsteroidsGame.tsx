@@ -40,6 +40,7 @@ export function AsteroidsGame({ onExit }: AsteroidsProps) {
   const alienSpawnTimer = useRef(5); // First alien spawns around 5 seconds
   const difficulty = useRef(1); // Increases over time
   const isDragging = useRef(false);
+  const lastXRef = useRef(0);
 
   const createAsteroid = (x: number, y: number, sizeMultiplier: number) => {
     const edges = Math.floor(Math.random() * 5) + 7;
@@ -120,28 +121,19 @@ export function AsteroidsGame({ onExit }: AsteroidsProps) {
       
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
-      const x = (e.clientX - rect.left) * scaleX;
+      const dx = (e.clientX - lastXRef.current) * scaleX;
       
       // Update ship X
-      ship.current.x = x;
+      ship.current.x += dx;
+      lastXRef.current = e.clientX;
       ship.current.autoFire = true;
     };
 
     const handlePointerDown = (e: PointerEvent) => {
       if (!canvas || gameOver) return;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const x = (e.clientX - rect.left) * scaleX;
-      const y = (e.clientY - rect.top) * scaleY;
-      
-      // Check if click was near the ship (approx radius 50px for ease of touch)
-      const dx = x - ship.current.x;
-      const dy = y - ship.current.y;
-      if (Math.abs(dx) < 50 && Math.abs(dy) < 50) {
-          isDragging.current = true;
-          ship.current.autoFire = true;
-      }
+      isDragging.current = true;
+      lastXRef.current = e.clientX;
+      ship.current.autoFire = true;
     };
 
     const handlePointerUp = () => {
@@ -299,7 +291,6 @@ export function AsteroidsGame({ onExit }: AsteroidsProps) {
          }
 
          // Check bullet collision
-         let hit = false;
          for (let i = bullets.current.length - 1; i >= 0; i--) {
             const b = bullets.current[i];
             if (Math.abs(b.x - al.x) < al.width/2 + b.width/2 && Math.abs(b.y - al.y) < al.height/2 + b.height/2) {
@@ -540,7 +531,7 @@ export function AsteroidsGame({ onExit }: AsteroidsProps) {
       // UI: Weapon & AutoFire
       if (s.autoFire || s.weaponTimer > 0) {
           ctx.fillStyle = '#0ff';
-          let texts = [];
+          const texts = [];
           if (s.weaponTimer > 0) texts.push(`WEAPON: ${s.weapon.toUpperCase()} (${s.weaponTimer.toFixed(1)}s)`);
           if (s.autoFire) texts.push(`AUTO-FIRE: ON`);
           texts.forEach((txt, i) => ctx.fillText(txt, 10, 85 + i * 15));

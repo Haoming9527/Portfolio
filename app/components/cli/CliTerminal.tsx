@@ -10,6 +10,14 @@ import { TetrisGame } from "./games/TetrisGame";
 import { AsteroidsGame } from "./games/AsteroidsGame";
 import { GomokuGame } from "./games/GomokuGame";
 
+// Game specific minimum sizes
+const MIN_GAME_SIZES: Record<string, { w: number, h: number }> = {
+  snake: { w: 450, h: 450 },
+  tetris: { w: 400, h: 600 },
+  asteroids: { w: 600, h: 650 },
+  gomoku: { w: 550, h: 600 },
+};
+
 export function CliTerminal() {
   const { isOpen, closeCli, isMinimized, setIsMinimized } = useCli();
   const { input, setInput, history, currentPath, handleKeyDown, isLoading, promptLabel, isMatrix, activeGame, setActiveGame } = useCliLogic();
@@ -64,14 +72,6 @@ export function CliTerminal() {
   useEffect(() => {
     if (!isOpen) setIsMinimized(false);
   }, [isOpen, setIsMinimized]);
-
-  // Game specific minimum sizes
-  const MIN_GAME_SIZES: Record<string, { w: number, h: number }> = {
-    snake: { w: 450, h: 450 },
-    tetris: { w: 400, h: 600 },
-    asteroids: { w: 600, h: 650 },
-    gomoku: { w: 550, h: 600 },
-  };
 
   // Auto-expand window for games
   useEffect(() => {
@@ -157,7 +157,7 @@ export function CliTerminal() {
         window.removeEventListener("mousemove", handleMouseMove);
         window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, resizeDir, activeGame]); // added activeGame here for correctness
+  }, [isDragging, resizeDir, activeGame]);
 
   const startDrag = (e: React.MouseEvent) => {
       if (isMaximized) return;
