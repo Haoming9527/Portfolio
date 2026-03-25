@@ -518,6 +518,7 @@ function FolderCard({ folder }: { folder: FolderItem }) {
                           src={imageUrl}
                           alt="Certificate preview"
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-contain rounded-xl p-2"
                         />
                       </div>
@@ -613,6 +614,7 @@ function CertificateCard({ cert }: { cert: Certificate }) {
             src={cert.imageUrl}
             alt={cert.title || "Certificate Image"}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-contain group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-2xl"
           />
         ) : (

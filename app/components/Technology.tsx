@@ -1,7 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Technology as TechnologyType } from "../lib/interface";
 import { client } from "../lib/sanity";
-import DynamicTechScene from "@/components/3d/technology/DynamicTechScene";
 import Image from "next/image";
 
 async function getTechnologyData() {
@@ -16,14 +15,21 @@ async function getTechnologyData() {
   const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
   return data;
 }
-
 export async function Technology() {
   const technologyData = await getTechnologyData();
   
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-6 lg:p-8 mt-10">
       <div className="w-full relative col-span-1 min-h-[300px] h-full">
-         <DynamicTechScene />
+        <Image
+          src="/square.jpg"
+          alt="Technology"
+          width={800}
+          height={600}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="w-full h-full object-cover rounded-2xl"
+          priority
+        />
       </div>
       <div className="flex flex-col w-full col-span-1 lg:col-span-2 gap-4">
         <Card className="bg-gray-100 dark:bg-gray-800 border-none">
