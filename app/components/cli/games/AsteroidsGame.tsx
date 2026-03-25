@@ -214,7 +214,7 @@ export function AsteroidsGame({ onExit }: AsteroidsProps) {
       alienSpawnTimer.current -= dt;
       if (alienSpawnTimer.current <= 0) {
           const fromLeft = Math.random() > 0.5;
-          const y = 30 + Math.random() * 80; // Always at the top
+          const y = 30 + Math.random() * (canvas.height * 0.4); 
           aliens.current.push({
               x: fromLeft ? -50 : canvas.width + 50,
               y,
@@ -314,7 +314,11 @@ export function AsteroidsGame({ onExit }: AsteroidsProps) {
                 
                 powerups.current.push({ x: al.x, y: al.y, vy: 100, radius: 10, type, color });
             }
-            newAliens.push(al);
+         } else {
+            // Keep alien if alive and within reasonable horizontal bounds
+            if (al.x > -100 && al.x < canvas.width + 100) {
+                newAliens.push(al);
+            }
          }
       });
       aliens.current = newAliens;
