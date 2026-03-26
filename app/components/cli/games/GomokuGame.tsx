@@ -31,6 +31,12 @@ export function GomokuGame({ onExit }: GomokuProps) {
   const peerRef = useRef<Peer | null>(null);
   const connRef = useRef<DataConnection | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isReadyRef = useRef(isReady);
+  const winnerRef = useRef(winner);
+
+  // Sync refs with state
+  useEffect(() => { isReadyRef.current = isReady; }, [isReady]);
+  useEffect(() => { winnerRef.current = winner; }, [winner]);
 
   const resetToLobby = () => {
     setBoard(Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)));
@@ -142,7 +148,7 @@ export function GomokuGame({ onExit }: GomokuProps) {
         });
 
         peer.on('disconnected', () => {
-            if (isReady && !winner) {
+            if (isReadyRef.current && !winnerRef.current) {
                 setPeerError("Lost connection to the signaling server.");
                 resetToLobby();
             }
@@ -164,7 +170,8 @@ export function GomokuGame({ onExit }: GomokuProps) {
       if (peerInstance) peerInstance.destroy();
       window.removeEventListener('beforeunload', handleUnload);
     };
-  }, [mode, joinCodeInput, isReady, winner]);
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [mode, joinCodeInput]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
