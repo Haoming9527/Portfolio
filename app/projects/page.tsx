@@ -28,8 +28,9 @@ export default async function ProjectsPage() {
   const data: ProjectsCard[] = await getData();
   return (
     <div className="container mx-auto px-6 py-16">
-      <div className="text-center mb-16">
-        <h1 className="text-5xl font-bold lg:text-6xl mb-6 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-in fade-in slide-in-from-top-4 duration-700" style={{
+      <div className="text-center mb-16 relative">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-violet-500/10 dark:bg-violet-500/5 blur-[80px] -z-10 rounded-full" />
+        <h1 className="text-5xl font-bold lg:text-6xl mb-6 bg-gradient-to-r from-blue-600 via-violet-600 to-fuchsia-500 bg-clip-text text-transparent animate-in fade-in slide-in-from-top-6 duration-1000 ease-out" style={{
           lineHeight: '1.4',
           letterSpacing: '-0.02em'
         }}>

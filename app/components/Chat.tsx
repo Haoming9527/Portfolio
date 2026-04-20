@@ -3,6 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Bot, User } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -81,22 +86,67 @@ export function Chat() {
                 className={`flex items-end ${m.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {m.role === "assistant" && (
-                  <span className="mr-2 text-2xl">🤖</span>
+                  <div className="mr-2 mb-1 p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                    <Bot className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
                 )}
                 <div
-                  className={`px-3 py-2 rounded-xl break-words max-w-[85%] ${
+                  className={`px-3 py-1.5 rounded-xl break-words max-w-[85%] ${
                     m.role === "user"
-                      ? "bg-blue-500 text-white rounded-br-none"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
+                      ? "bg-blue-600 text-white rounded-br-none"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-none border border-gray-200 dark:border-gray-700"
                   }`}
                 >
-                  {m.content}
+                  {m.role === "assistant" ? (
+                    <div
+                      className="prose prose-sm dark:prose-invert max-w-none 
+                        prose-p:leading-relaxed prose-p:my-1 
+                        prose-ul:my-1 prose-li:my-0 
+                        prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-code:bg-blue-50 dark:prose-code:bg-blue-900/30 prose-code:px-1 prose-code:rounded
+                        prose-strong:text-inherit"
+                    >
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm as any]}
+                        components={{
+                          code({ node, inline, className, children, ...props }: any) {
+                            const match = /language-(\w+)/.exec(className || "");
+                            return !inline && match ? (
+                              <div className="my-2 rounded-lg overflow-hidden border border-gray-700">
+                                <div className="bg-gray-900 px-3 py-1 text-xs text-gray-400 border-b border-gray-800 flex justify-between items-center">
+                                  <span>{match[1]}</span>
+                                </div>
+                                <SyntaxHighlighter
+                                  {...props}
+                                  style={oneDark}
+                                  language={match[1]}
+                                  PreTag="div"
+                                  customStyle={{ margin: 0, borderRadius: 0, fontSize: "0.8rem" }}
+                                >
+                                  {String(children).replace(/\n$/, "")}
+                                </SyntaxHighlighter>
+                              </div>
+                            ) : (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            );
+                          },
+                        }}
+                      >
+                        {m.content}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    m.content
+                  )}
                 </div>
               </div>
             ))}
             {loading && (
               <div className="flex items-end justify-start">
-                <span className="mr-2 text-2xl">🤖</span>
+                <div className="mr-2 mb-1 p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <Bot className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-pulse" />
+                </div>
                 <Skeleton className="bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-xl rounded-bl-none max-w-[85%] w-1/2 h-10" />
               </div>
             )}

@@ -46,8 +46,8 @@ export default async function ExperiencePage() {
   
   return (
     <div className="container mx-auto px-6 py-16">
-      <div className="text-center mb-16">
-        <h1 className="text-5xl font-bold lg:text-6xl mb-6 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-in fade-in slide-in-from-top-4 duration-700">
+      <div className="text-center mb-16 relative">
+        <h1 className="text-5xl font-bold lg:text-6xl mb-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-sky-500 dark:from-emerald-400 dark:via-teal-400 dark:to-sky-400 bg-clip-text text-transparent animate-in fade-in slide-in-from-top-4 duration-700">
           Experience & Education
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-top-4 duration-700 delay-200">

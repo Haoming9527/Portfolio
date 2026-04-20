@@ -41,7 +41,7 @@ export function Navbar() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-gradient-to-r from-white/90 via-gray-50/90 to-white/90 backdrop-blur-md border-b border-gray-100 dark:from-gray-950/90 dark:via-gray-900/90 dark:to-gray-950/90 dark:border-gray-800">
+    <nav role="navigation" className="sticky top-0 z-50 w-full bg-gradient-to-r from-white/90 via-gray-50/90 to-white/90 backdrop-blur-md border-b border-gray-100 dark:from-gray-950/90 dark:via-gray-900/90 dark:to-gray-950/90 dark:border-gray-800">
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo/Brand */}

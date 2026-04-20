@@ -9,6 +9,7 @@ import { BackToTop } from "./components/BackToTop";
 import { Chat } from "./components/Chat";
 import { CliProvider } from "./components/cli/CliContext";
 import { CliTerminal } from "./components/cli/CliTerminal";
+import { NextPageButton } from "./components/NextPageButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,8 +55,13 @@ export default function RootLayout({
           storageKey="portfolio-theme"
         >
           <CliProvider>
-            <Navbar/>
-            {children}
+            <header role="banner">
+              <Navbar />
+            </header>
+            <main role="main" id="main-content">
+              {children}
+            </main>
+            <NextPageButton />
             <Footer />
             <BackToTop />
             <Chat />

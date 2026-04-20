@@ -1,48 +1,81 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { client } from "@/app/lib/sanity";
 
-async function getKnowledgeBase() {
-  const query = `*[_type != "sanity.imageAsset" && _type != "sanity.fileAsset"]{
-    _type,
+async function getProjects() {
+  const query = `*[_type == "project"]{
     title,
-    name,
-    description,
-    organization,
-    period
+    description
   } | order(orderRank asc)`;
   const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
-  return data;
+  return data.map((d: any) => `Project: ${d.title} — ${d.description}`).join("\n");
 }
 
-type KnowledgeBaseDoc =
-  | { _type: "project"; title: string; description: string }
-  | { _type: "technology"; name: string }
-  | { _type: "experience"; title: string; organization: string; period: string; description: string }
-  | { _type: "education"; title: string; period: string; description: string }
-  | { _type: "certificate"; title: string; description: string };
-
-function formatKnowledgeBase(docs: KnowledgeBaseDoc[]): string {
-  return docs
-    .map((doc) => {
-      switch (doc._type) {
-        case "project":
-          return `Project: ${doc.title} — ${doc.description}`;
-        case "technology":
-          return `Technology: ${doc.name}`;
-        case "experience":
-          return `Experience: ${doc.title} at ${doc.organization} (${doc.period}) — ${doc.description}`;
-        case "education":
-          return `Education: ${doc.title} (${doc.period}) — ${doc.description}`;
-        case "certificate":
-          return `Certificate: ${doc.title} — ${doc.description}`;
-        default:
-          return "";
-      }
-    })
-    .filter(Boolean)
-    .join("\n");
+async function getExperience() {
+  const query = `*[_type == "experience"]{
+    title,
+    organization,
+    period,
+    description
+  } | order(orderRank asc)`;
+  const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
+  return data.map((d: any) => `Experience: ${d.title} at ${d.organization} (${d.period}) — ${d.description}`).join("\n");
 }
+
+async function getEducation() {
+  const query = `*[_type == "education"]{
+    title,
+    period,
+    description
+  } | order(orderRank asc)`;
+  const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
+  return data.map((d: any) => `Education: ${d.title} (${d.period}) — ${d.description}`).join("\n");
+}
+
+async function getCertificates() {
+  const query = `*[_type == "certificate"]{
+    title,
+    description
+  } | order(orderRank asc)`;
+  const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
+  return data.map((d: any) => `Certificate: ${d.title} — ${d.description}`).join("\n");
+}
+
+async function getTechnologies() {
+  const query = `*[_type == "technology"]{
+    name
+  } | order(orderRank asc)`;
+  const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
+  return data.map((d: any) => `Technology: ${d.name}`).join("\n");
+}
+
+
+const tools = [
+  {
+    functionDeclarations: [
+      {
+        name: "get_projects",
+        description: "Get information about Shen Haoming's projects.",
+      },
+      {
+        name: "get_experience",
+        description: "Get information about Shen Haoming's work experience.",
+      },
+      {
+        name: "get_education",
+        description: "Get information about Shen Haoming's education background.",
+      },
+      {
+        name: "get_certificates",
+        description: "Get information about Shen Haoming's certifications.",
+      },
+      {
+        name: "get_technologies",
+        description: "Get information about the technical skills and technologies Shen Haoming is proficient in.",
+      },
+    ],
+  },
+];
 
 function trimTo100Words(text: string): string {
   const words = text.split(/\s+/);
@@ -64,32 +97,79 @@ function trimTo100Words(text: string): string {
 export async function POST(req: Request) {
   try {
     const { message } = await req.json();
-    const kbDocs = await getKnowledgeBase();
-    const context = formatKnowledgeBase(kbDocs);
-    const prompt = `
-    You are a helpful and professional chatbot for Shen Haoming's personal portfolio website.  
-    You must always keep answers under 100 words. Do not exceed this limit under any circumstance.  
-    Answer the user’s question strictly based on the knowledge base below:  
 
-    CONTEXT (knowledge base):
-    ${context}
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    
+    const contents: any[] = [{ role: "user", parts: [{ text: message }] }];
+    const config = {
+      systemInstruction: `
+        You are a helpful and professional chatbot for Shen Haoming's personal portfolio website.  
+        Use the provided tools to fetch information about Shen Haoming's projects, experience, education, certificates, and technologies when needed to answer the user's question.
+        
+        Rules for your response:
+        - Use markdown for formatting (e.g., bullet points for lists, bold text for emphasis) where appropriate to make information easy to read.
+        - Base answers ONLY on the information retrieved via tools.
+        - If the information is not available via tools, say politely: "I don’t have that information in my knowledge base."
+        - Be clear, concise, and friendly.
+        - Always use fewer than 100 words. Brevity is more important than detail.
+      `,
+      tools,
+    };
 
-    USER QUESTION:
-    ${message}
+    let response = await ai.models.generateContent({
+      model: "gemini-3.1-flash-lite-preview",
+      contents,
+      config,
+    });
 
+    let calls = response.functionCalls || [];
+    
+    // Iteratively handle tool calls
+    while (calls.length > 0) {
+      contents.push(response.candidates?.[0]?.content as any);
 
-    Rules for your response:  
-    - Base answers only on the knowledge base provided.  
-    - If the answer is unknown, say politely: "I don’t have that information in my knowledge base."  
-    - Be clear, concise, and friendly.  
-    - Always use fewer than 100 words. Brevity is more important than detail.  
-    `;
+      const functionParts: any[] = [];
+      for (const call of calls) {
+        let content = "";
+        switch (call.name) {
+          case "get_projects":
+            content = await getProjects();
+            break;
+          case "get_experience":
+            content = await getExperience();
+            break;
+          case "get_education":
+            content = await getEducation();
+            break;
+          case "get_certificates":
+            content = await getCertificates();
+            break;
+          case "get_technologies":
+            content = await getTechnologies();
+            break;
+        }
+        
+        functionParts.push({
+          functionResponse: {
+            name: call.name,
+            response: { content },
+            id: (call as any).id
+          }
+        });
+      }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-    const result = await model.generateContent(prompt);
+      contents.push({ role: "user", parts: functionParts });
 
-    let reply = result?.response?.text() || "No reply";
+      response = await ai.models.generateContent({
+        model: "gemini-3.1-flash-lite-preview",
+        contents,
+        config,
+      });
+      
+      calls = response.functionCalls || [];
+    }
+
+    let reply = response.text || "No reply";
     reply = trimTo100Words(reply);
     return NextResponse.json({ reply });
   } catch (err: unknown) {
