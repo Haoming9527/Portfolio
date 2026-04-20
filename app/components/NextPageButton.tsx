@@ -15,12 +15,14 @@ const ROUTES = [
 
 export function NextPageButton() {
   const [show, setShow] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
   const currentRoute = ROUTES.find((r) => r.path === pathname);
 
   useEffect(() => {
+    setMounted(true);
     setShow(false);
 
     const handleScroll = () => {
@@ -37,7 +39,7 @@ export function NextPageButton() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
-  if (!currentRoute) return null;
+  if (!mounted || !currentRoute) return null;
 
   return (
     <div
