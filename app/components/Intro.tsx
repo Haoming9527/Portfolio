@@ -43,11 +43,11 @@ export function Intro() {
               <div className="intro-fade-in">
                   <HackerName />
               </div>
-              <h2 className="intro-fade-in text-2xl lg:text-2xl font-semiboldmt-6 text-gray-800 dark:text-gray-200">
+              <h2 className="intro-fade-in text-2xl lg:text-2xl font-semibold mt-6 text-gray-800 dark:text-gray-200">
                 Software Developer
               </h2>
               <p className="intro-fade-in text-lg lg:text-lg font-normal mt-6 text-gray-600 dark:text-gray-400 leading-relaxed">
-              Passionate about building innovative software with modern web technologies and applying them to solve real-world problems.
+              Passionate about building innovative software, engineering agentic workflows, and developing intelligent systems around AI.
               </p>
 
             <div className="intro-fade-in">

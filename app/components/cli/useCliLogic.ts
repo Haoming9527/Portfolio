@@ -167,7 +167,7 @@ export function useCliLogic() {
       case "about":
         addToHistory([
           "Shen Haoming - Software Developer",
-          "Passionate about Full Stack Development, Software Engineering, and AI.",
+          "Passionate about Full Stack Development, Agentic engineering, and AI.",
           "Based in Singapore.",
         ]);
         break;
