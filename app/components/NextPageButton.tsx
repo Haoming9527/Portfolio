@@ -26,17 +26,22 @@ export function NextPageButton() {
     setShow(false);
 
     const handleScroll = () => {
+      const threshold = window.innerWidth < 768 ? 800 : 400;
       const isNearBottom =
         window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 200;
+        document.documentElement.scrollHeight - threshold;
 
       setShow(isNearBottom);
     };
 
     window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
     setTimeout(handleScroll, 100);
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, [pathname]);
 
   if (!mounted || !currentRoute) return null;

@@ -10,6 +10,7 @@ import { Chat } from "./components/Chat";
 import { CliProvider } from "./components/cli/CliContext";
 import { CliTerminal } from "./components/cli/CliTerminal";
 import { NextPageButton } from "./components/NextPageButton";
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,6 +67,7 @@ export default function RootLayout({
             <BackToTop />
             <Chat />
             <CliTerminal />
+            <Analytics />
           </CliProvider>
         </ThemeProvider>
       </body>
