@@ -1,14 +1,42 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import type { Content, Part } from "@google/genai";
 import { client } from "@/app/lib/sanity";
+
+interface ProjectData {
+  title: string;
+  description: string;
+}
+
+interface ExperienceData {
+  title: string;
+  organization: string;
+  period: string;
+  description: string;
+}
+
+interface EducationData {
+  title: string;
+  period: string;
+  description: string;
+}
+
+interface CertificateData {
+  title: string;
+  description: string;
+}
+
+interface TechnologyData {
+  name: string;
+}
 
 async function getProjects() {
   const query = `*[_type == "project"]{
     title,
     description
   } | order(orderRank asc)`;
-  const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
-  return data.map((d: any) => `Project: ${d.title} — ${d.description}`).join("\n");
+  const data = await client.fetch<ProjectData[]>(query, {}, { next: { revalidate: 30 } });
+  return data.map((d: ProjectData) => `Project: ${d.title} — ${d.description}`).join("\n");
 }
 
 async function getExperience() {
@@ -18,8 +46,8 @@ async function getExperience() {
     period,
     description
   } | order(orderRank asc)`;
-  const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
-  return data.map((d: any) => `Experience: ${d.title} at ${d.organization} (${d.period}) — ${d.description}`).join("\n");
+  const data = await client.fetch<ExperienceData[]>(query, {}, { next: { revalidate: 30 } });
+  return data.map((d: ExperienceData) => `Experience: ${d.title} at ${d.organization} (${d.period}) — ${d.description}`).join("\n");
 }
 
 async function getEducation() {
@@ -28,8 +56,8 @@ async function getEducation() {
     period,
     description
   } | order(orderRank asc)`;
-  const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
-  return data.map((d: any) => `Education: ${d.title} (${d.period}) — ${d.description}`).join("\n");
+  const data = await client.fetch<EducationData[]>(query, {}, { next: { revalidate: 30 } });
+  return data.map((d: EducationData) => `Education: ${d.title} (${d.period}) — ${d.description}`).join("\n");
 }
 
 async function getCertificates() {
@@ -37,16 +65,16 @@ async function getCertificates() {
     title,
     description
   } | order(orderRank asc)`;
-  const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
-  return data.map((d: any) => `Certificate: ${d.title} — ${d.description}`).join("\n");
+  const data = await client.fetch<CertificateData[]>(query, {}, { next: { revalidate: 30 } });
+  return data.map((d: CertificateData) => `Certificate: ${d.title} — ${d.description}`).join("\n");
 }
 
 async function getTechnologies() {
   const query = `*[_type == "technology"]{
     name
   } | order(orderRank asc)`;
-  const data = await client.fetch(query, {}, { next: { revalidate: 30 } });
-  return data.map((d: any) => `Technology: ${d.name}`).join("\n");
+  const data = await client.fetch<TechnologyData[]>(query, {}, { next: { revalidate: 30 } });
+  return data.map((d: TechnologyData) => `Technology: ${d.name}`).join("\n");
 }
 
 
@@ -96,11 +124,19 @@ function trimTo100Words(text: string): string {
 
 export async function POST(req: Request) {
   try {
-    const { message } = await req.json();
+    const body = (await req.json()) as { message?: unknown };
+    const message = typeof body.message === "string" ? body.message : "";
+
+    if (!message.trim()) {
+      return NextResponse.json(
+        { error: { message: "Message is required." } },
+        { status: 400 }
+      );
+    }
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     
-    const contents: any[] = [{ role: "user", parts: [{ text: message }] }];
+    const contents: Content[] = [{ role: "user", parts: [{ text: message }] }];
     const config = {
       systemInstruction: `
         You are a helpful and professional chatbot for Shen Haoming's personal portfolio website.  
@@ -126,9 +162,12 @@ export async function POST(req: Request) {
     
     // Iteratively handle tool calls
     while (calls.length > 0) {
-      contents.push(response.candidates?.[0]?.content as any);
+      const modelContent = response.candidates?.[0]?.content;
+      if (modelContent) {
+        contents.push(modelContent);
+      }
 
-      const functionParts: any[] = [];
+      const functionParts: Part[] = [];
       for (const call of calls) {
         let content = "";
         switch (call.name) {
@@ -153,7 +192,7 @@ export async function POST(req: Request) {
           functionResponse: {
             name: call.name,
             response: { content },
-            id: (call as any).id
+            id: call.id,
           }
         });
       }

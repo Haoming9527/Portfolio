@@ -170,7 +170,6 @@ export function GomokuGame({ onExit }: GomokuProps) {
       if (peerInstance) peerInstance.destroy();
       window.removeEventListener('beforeunload', handleUnload);
     };
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [mode, joinCodeInput]);
 
   useEffect(() => {
