@@ -235,7 +235,7 @@ export default function CertificatesClient({
       <div className="mb-8">
         <div className="hidden sm:block mb-8">
           <div className="max-w-lg mx-auto">
-            <div className="relative group p-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 rounded-2xl hover:from-blue-500/30 hover:via-purple-500/30 hover:to-indigo-500/30 transition-all duration-300">
+            <div className="relative group rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg
                   className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-300"
@@ -256,7 +256,7 @@ export default function CertificatesClient({
                 placeholder={`Search in ${activeTag === "All" ? "all certificates" : activeTag}...`}
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="block w-full pl-12 pr-4 py-3 border-0 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-base font-medium"
+                className="block w-full pl-12 pr-4 py-3 border-0 rounded-xl bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200 text-base font-medium"
               />
             </div>
           </div>
@@ -270,7 +270,7 @@ export default function CertificatesClient({
                 onClick={() => handleTagClick(tag)}
                 className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 border-2 text-sm ${
                   activeTag === tag
-                    ? "bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white border-transparent shadow-lg"
+                    ? "bg-slate-950 text-white border-slate-950 dark:bg-white dark:text-slate-950 dark:border-white"
                     : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500"
                 }`}
               >
@@ -284,7 +284,7 @@ export default function CertificatesClient({
       <div className="sm:hidden flex items-center gap-3 mb-12">
         <button
           onClick={() => setIsFilterOpen(!isFilterOpen)}
-          className="flex items-center justify-center gap-1 w-12 h-10 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 border-2 border-transparent"
+          className="flex items-center justify-center gap-1 w-12 h-10 bg-slate-950 text-white rounded-lg transition-colors duration-200 border-2 border-transparent hover:bg-primary"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -295,7 +295,7 @@ export default function CertificatesClient({
         </button>
 
         <div className="flex-1 max-w-md">
-          <div className="relative group p-0.5 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 rounded-xl hover:from-blue-500/30 hover:via-purple-500/30 hover:to-indigo-500/30 transition-all duration-300">
+          <div className="relative group rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg className="h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -306,7 +306,7 @@ export default function CertificatesClient({
               placeholder={`Search...`}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2.5 border-0 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-sm font-medium"
+              className="block w-full pl-10 pr-3 py-2.5 border-0 rounded-lg bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200 text-sm font-medium"
             />
           </div>
         </div>
@@ -321,7 +321,7 @@ export default function CertificatesClient({
                 onClick={() => handleTagClick(tag)}
                 className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 border-2 text-sm ${
                   activeTag === tag
-                    ? "bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white border-transparent shadow-lg"
+                    ? "bg-slate-950 text-white border-slate-950 dark:bg-white dark:text-slate-950 dark:border-white"
                     : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500"
                 }`}
               >
@@ -335,7 +335,7 @@ export default function CertificatesClient({
       {(() => {
         if (allItems.length === 0) {
             return (
-                <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 animate-in fade-in zoom-in duration-500">
+                <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-800 animate-in fade-in zoom-in duration-500">
                     <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
                         <svg className="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -349,7 +349,7 @@ export default function CertificatesClient({
                         onClick={() => {
                             setActiveTag("All");
                         }}
-                        className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                        className="px-8 py-3 bg-slate-950 text-white rounded-md font-medium hover:bg-primary transition-colors duration-200 dark:bg-white dark:text-slate-950 dark:hover:bg-primary dark:hover:text-primary-foreground"
                     >
                         Clear filters
                     </button>
@@ -387,7 +387,7 @@ export default function CertificatesClient({
                   <div
                     key={cert._id}
                     onClick={() => handleCertificateClick(cert)}
-                    className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 cursor-pointer"
+                    className="group block bg-white dark:bg-gray-900 rounded-xl p-6 transition-colors duration-300 border border-gray-200 dark:border-gray-800 hover:border-primary/40 dark:hover:border-primary/50 cursor-pointer"
                     // Removed animation delay
                   >
                     <CertificateCard cert={cert} />
@@ -405,7 +405,7 @@ export default function CertificatesClient({
                     <div
                       key={`folder-${item.company}`}
                       onClick={() => openFolder(item.company)}
-                      className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 cursor-pointer"
+                      className="group block bg-white dark:bg-gray-900 rounded-xl p-6 transition-colors duration-300 border border-gray-200 dark:border-gray-800 hover:border-primary/40 dark:hover:border-primary/50 cursor-pointer"
                       // Removed animation delay
                     >
                       <FolderCard folder={item} />
@@ -416,7 +416,7 @@ export default function CertificatesClient({
                     <div
                       key={item.certificate._id}
                       onClick={() => handleCertificateClick(item.certificate)}
-                      className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800 cursor-pointer"
+                      className="group block bg-white dark:bg-gray-900 rounded-xl p-6 transition-colors duration-300 border border-gray-200 dark:border-gray-800 hover:border-primary/40 dark:hover:border-primary/50 cursor-pointer"
                       // Removed animation delay
                     >
                       <CertificateCard cert={item.certificate} />
@@ -463,7 +463,7 @@ export default function CertificatesClient({
             ✕
           </button>
 
-          <div className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row-reverse items-stretch mt-0 md:mt-0 max-h-[85vh] sm:max-h-[80vh]">
+          <div className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-xl overflow-hidden flex flex-col md:flex-row-reverse items-stretch mt-0 md:mt-0 max-h-[85vh] sm:max-h-[80vh]">
             <div className="w-full md:w-2/3 flex items-center justify-center bg-gray-100 dark:bg-gray-800 p-4 md:p-6">
               <div className="relative w-full flex items-center justify-center h-[50vh] sm:h-[60vh] md:h-[78vh]">
                 <Image
@@ -497,7 +497,7 @@ function FolderCard({ folder }: { folder: FolderItem }) {
 
   return (
     <>
-      <div className={`${isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]'} md:aspect-[4/3] overflow-hidden rounded-2xl relative mb-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20`}>
+      <div className={`${isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]'} md:aspect-[4/3] overflow-hidden rounded-lg relative mb-6 bg-slate-100 dark:bg-slate-800`}>
         <div className="relative w-full h-full p-4 flex items-center justify-center">
           {folder.previewImages.length > 0 ? (
             <div className="relative w-full h-full flex items-center justify-center">
@@ -506,7 +506,7 @@ function FolderCard({ folder }: { folder: FolderItem }) {
                 .map((imageUrl: string, index: number) => (
                   <div
                     key={index}
-                    className="absolute w-[80%] h-[80%] bg-white dark:bg-gray-800 rounded-xl shadow-lg border-2 border-gray-300 dark:border-gray-600 transition-transform duration-300"
+                    className="absolute w-[80%] h-[80%] bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-300 dark:border-gray-600 transition-transform duration-300"
                     style={{
                       transform: `translate(${index * 15}px, ${-index * 15}px) scale(${1 - index * 0.05})`,
                       zIndex: 3 - index,
@@ -539,7 +539,7 @@ function FolderCard({ folder }: { folder: FolderItem }) {
             </div>
           )}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
       </div>
 
       <div className="space-y-4">
@@ -608,17 +608,17 @@ function CertificateCard({ cert }: { cert: Certificate }) {
 
   return (
     <>
-      <div className={`${isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]'} md:aspect-[4/3] overflow-hidden rounded-2xl relative mb-6 bg-gray-50 dark:bg-gray-800`}>
+      <div className={`${isLandscape ? 'aspect-[4/3]' : 'aspect-[3/4]'} md:aspect-[4/3] overflow-hidden rounded-lg relative mb-6 bg-gray-50 dark:bg-gray-800`}>
         {cert.imageUrl ? (
           <Image
             src={cert.imageUrl}
             alt={cert.title || "Certificate Image"}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-contain group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-2xl"
+            className="object-contain group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-lg"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl flex items-center justify-center">
+          <div className="w-full h-full bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg
@@ -641,7 +641,7 @@ function CertificateCard({ cert }: { cert: Certificate }) {
             </div>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
       </div>
 
       <div className="space-y-4">

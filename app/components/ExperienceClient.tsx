@@ -15,7 +15,6 @@ function getColorClasses(color: string) {
   const colorMap: {
     [key: string]: {
       dot: string;
-      hover: string;
       text: string;
       bgLight: string;
       bgDark: string;
@@ -25,7 +24,6 @@ function getColorClasses(color: string) {
   } = {
     blue: {
       dot: "bg-blue-500",
-      hover: "group-hover:bg-blue-500 group-hover:text-blue-500",
       text: "text-blue-600",
       bgLight: "bg-blue-50",
       bgDark: "dark:bg-blue-900/20",
@@ -34,7 +32,6 @@ function getColorClasses(color: string) {
     },
     purple: {
       dot: "bg-purple-500",
-      hover: "group-hover:bg-purple-500 group-hover:text-purple-500",
       text: "text-purple-600",
       bgLight: "bg-purple-50",
       bgDark: "dark:bg-purple-900/20",
@@ -43,7 +40,6 @@ function getColorClasses(color: string) {
     },
     indigo: {
       dot: "bg-indigo-500",
-      hover: "group-hover:bg-indigo-500 group-hover:text-indigo-500",
       text: "text-indigo-600",
       bgLight: "bg-indigo-50",
       bgDark: "dark:bg-indigo-900/20",
@@ -52,7 +48,6 @@ function getColorClasses(color: string) {
     },
     green: {
       dot: "bg-green-500",
-      hover: "group-hover:bg-green-500 group-hover:text-green-500",
       text: "text-green-600",
       bgLight: "bg-green-50",
       bgDark: "dark:bg-green-900/20",
@@ -61,7 +56,6 @@ function getColorClasses(color: string) {
     },
     red: {
       dot: "bg-red-500",
-      hover: "group-hover:bg-red-500 group-hover:text-red-500",
       text: "text-red-600",
       bgLight: "bg-red-50",
       bgDark: "dark:bg-red-900/20",
@@ -70,7 +64,6 @@ function getColorClasses(color: string) {
     },
     orange: {
       dot: "bg-orange-500",
-      hover: "group-hover:bg-orange-500 group-hover:text-orange-500",
       text: "text-orange-600",
       bgLight: "bg-orange-50",
       bgDark: "dark:bg-orange-900/20",
@@ -89,6 +82,10 @@ export function ExperienceClient({
   const lineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
     const ctx = gsap.context(() => {
       gsap.fromTo(".beam-light", 
         { top: "100%" },
@@ -113,12 +110,12 @@ export function ExperienceClient({
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
             Education
           </h2>
-          <div className="w-20 sm:w-24 lg:w-32 h-1 sm:h-1.5 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 mx-auto rounded-full shadow-lg"></div>
+          <div className="w-20 sm:w-24 lg:w-32 h-px bg-border mx-auto"></div>
         </div>
 
         <div className="relative">
           <div ref={lineRef} className="absolute left-0 sm:left-4 top-0 bottom-0 w-[2px] -ml-[1px] bg-gray-200 dark:bg-gray-800 pointer-events-none z-0 overflow-hidden rounded-full">
-             <div className="beam-light absolute -top-32 left-0 w-full h-32 bg-gradient-to-b from-transparent via-blue-500 to-transparent opacity-100 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+             <div className="beam-light absolute -top-32 left-0 w-full h-32 bg-primary opacity-80"></div>
           </div>
 
           <div className="space-y-6 sm:space-y-8 lg:space-y-10 relative z-10">
@@ -126,8 +123,8 @@ export function ExperienceClient({
               const colors = getColorClasses(item.color);
               return (
                 <div key={idx} className="relative group pl-8 sm:pl-12">
-                  <div className="absolute left-0 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 -ml-4 flex items-center justify-center z-10 group-hover:scale-125 transition-transform duration-300">
-                    <div className={`w-3 h-3 rounded-full ${colors.dot} ${colors.text} transition-all duration-300 shadow-none group-hover:shadow-[0_0_10px_currentColor]`} />
+                  <div className="absolute left-0 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 -ml-4 flex items-center justify-center z-10">
+                    <div className={`w-3 h-3 rounded-full ${colors.dot} ${colors.text}`} />
                   </div>
 
                   {item.url ? (
@@ -135,21 +132,21 @@ export function ExperienceClient({
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:border-blue-200 dark:group-hover:border-blue-800 cursor-pointer"
+                      className="block p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 transition-colors duration-200 hover:border-slate-400 dark:hover:border-slate-500 cursor-pointer"
                     >
                       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4 sm:mb-6">
                         <div className="flex items-start gap-3 sm:gap-4 lg:gap-6">
-                          <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 p-1 sm:p-2 shadow-md group-hover:bg-gray-100 transition-colors duration-200">
+                          <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden bg-gray-50 flex-shrink-0 p-1 sm:p-2">
                             <Image
                               src={item.logoUrl}
                               alt={`${item.title} logo`}
                               width={80}
                               height={80}
-                              className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200"
+                              className="w-full h-full object-contain"
                             />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
                               {item.title}
                             </h3>
                             <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed">
@@ -178,30 +175,13 @@ export function ExperienceClient({
                           </span>
                         </div>
                       </div>
-                      {/* External Link Icon */}
-                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <svg
-                          className="w-5 h-5 text-blue-600 dark:text-blue-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                      </div>
                       {/* Hover Effect Overlay */}
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                     </a>
                   ) : (
-                    <div className="p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
+                    <div className="p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4 sm:mb-6">
                         <div className="flex items-start gap-3 sm:gap-4 lg:gap-6">
-                          <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 p-1 sm:p-2 shadow-md">
+                          <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden bg-gray-50 flex-shrink-0 p-1 sm:p-2">
                             <Image
                               src={item.logoUrl}
                               alt={`${item.title} logo`}
@@ -255,7 +235,7 @@ export function ExperienceClient({
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
             Experience
           </h2>
-          <div className="w-20 sm:w-24 lg:w-32 h-1 sm:h-1.5 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 mx-auto rounded-full shadow-lg"></div>
+          <div className="w-20 sm:w-24 lg:w-32 h-px bg-border mx-auto"></div>
         </div>
 
         {experienceData.length > 0 ? (
@@ -271,21 +251,21 @@ export function ExperienceClient({
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-10 shadow-lg border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300 cursor-pointer h-full flex flex-col"
+                    className="block bg-white dark:bg-gray-900 rounded-xl p-4 sm:p-6 lg:p-10 border border-gray-200 dark:border-gray-800 hover:border-slate-400 dark:hover:border-slate-500 transition-colors duration-200 cursor-pointer h-full flex flex-col"
                   >
                     {/* Header with Logo and Organization */}
                     <div className="flex items-start gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl overflow-hidden bg-gray-50 dark:bg-gray-800 flex-shrink-0 group-hover:bg-gray-100 dark:group-hover:bg-gray-700 transition-colors duration-200 shadow-md">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-800 flex-shrink-0">
                         <Image
                           src={item.logoUrl}
                           alt={`${item.organization} logo`}
                           width={80}
                           height={80}
-                          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white leading-tight mb-1 sm:mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white leading-tight mb-1 sm:mb-2">
                           {item.title}
                         </h3>
                         <p className="text-sm sm:text-base lg:text-lg font-semibold text-gray-600 dark:text-gray-400 truncate">
@@ -296,7 +276,7 @@ export function ExperienceClient({
 
                     {/* Period Badge */}
                     <div className="mb-4 sm:mb-6 flex justify-start">
-                      <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-semibold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shadow-sm">
+                      <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-semibold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
                         <svg
                           className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-2 sm:mr-3"
                           fill="none"
@@ -319,31 +299,14 @@ export function ExperienceClient({
                       {item.description}
                     </p>
 
-                    {/* External Link Icon */}
-                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <svg
-                        className="w-5 h-5 text-blue-600 dark:text-blue-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                        />
-                      </svg>
-                    </div>
 
                     {/* Hover Effect Overlay */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                   </a>
                 ) : (
-                  <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-10 shadow-lg border border-gray-100 dark:border-gray-800 h-full flex flex-col">
+                  <div className="bg-white dark:bg-gray-900 rounded-xl p-4 sm:p-6 lg:p-10 border border-gray-200 dark:border-gray-800 h-full flex flex-col">
                     {/* Header with Logo and Organization */}
                     <div className="flex items-start gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl overflow-hidden bg-gray-50 dark:bg-gray-800 flex-shrink-0 shadow-md">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-800 flex-shrink-0">
                         <Image
                           src={item.logoUrl}
                           alt={`${item.organization} logo`}
@@ -364,7 +327,7 @@ export function ExperienceClient({
 
                     {/* Period Badge */}
                     <div className="mb-4 sm:mb-6 flex justify-start">
-                      <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-semibold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shadow-sm">
+                      <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-semibold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
                         <svg
                           className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-2 sm:mr-3"
                           fill="none"
@@ -393,7 +356,7 @@ export function ExperienceClient({
           </div>
         ) : (
           <div className="text-center py-8 sm:py-12 lg:py-16">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 dark:bg-slate-800 rounded-xl mb-4 sm:mb-6">
               <svg
                 className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400"
                 fill="none"

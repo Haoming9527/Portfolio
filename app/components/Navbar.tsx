@@ -41,7 +41,7 @@ export function Navbar() {
   }, []);
 
   return (
-    <nav role="navigation" className="sticky top-0 z-50 w-full bg-gradient-to-r from-white/90 via-gray-50/90 to-white/90 backdrop-blur-md border-b border-gray-100 dark:from-gray-950/90 dark:via-gray-900/90 dark:to-gray-950/90 dark:border-gray-800">
+    <nav role="navigation" className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 dark:bg-gray-950/90 dark:border-gray-800">
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo/Brand */}
@@ -72,7 +72,7 @@ export function Navbar() {
               <div className="hidden sm:block">
                 <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
                   Shen{" "}
-                  <span className="font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <span className="font-bold text-primary">
                     Haoming
                   </span>
                 </h1>
@@ -95,9 +95,9 @@ export function Navbar() {
               >
                 {item.name}
                 {mounted && pathname === item.href && (
-                  <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></span>
+                  <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-primary rounded-full"></span>
                 )}
-                <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full transition-all duration-200 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary/70 rounded-full transition-all duration-200 group-hover:w-full"></span>
               </Link>
             ))}
           </div>
@@ -108,7 +108,7 @@ export function Navbar() {
             <ThemeToggle />
 
             <Button
-              className="hidden sm:flex bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200 font-semibold text-sm tracking-wide"
+              className="hidden sm:flex bg-slate-950 hover:bg-primary text-white border-0 transition-colors duration-200 font-semibold text-sm tracking-wide dark:bg-white dark:text-slate-950 dark:hover:bg-primary dark:hover:text-primary-foreground"
               asChild
             >
               <a

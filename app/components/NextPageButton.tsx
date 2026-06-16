@@ -59,7 +59,7 @@ export function NextPageButton() {
       >
         <Button
           onClick={() => router.push(currentRoute.next)}
-          className="rounded-full shadow-lg hover:shadow-2xl transition-shadow bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 h-16 text-lg font-semibold group flex items-center justify-center gap-3 border border-blue-400/50 dark:border-blue-900/50"
+          className="rounded-full bg-slate-950 hover:bg-primary text-white px-8 h-16 text-lg font-semibold group flex items-center justify-center gap-3 border border-slate-800 transition-colors dark:bg-white dark:text-slate-950 dark:hover:bg-primary dark:hover:text-primary-foreground"
         >
           <span className="leading-none translate-y-[1px]">Go to {currentRoute.name}</span>
           <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />

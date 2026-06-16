@@ -30,12 +30,11 @@ export default async function CertificatesPage() {
   return (
     <div className="container mx-auto px-6 py-16">
       <div className="text-center mb-16 relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-32 bg-orange-500/10 dark:bg-orange-500/5 blur-[100px] -z-10 rounded-full" />
-        <h1 className="text-5xl font-bold lg:text-6xl mb-6 bg-gradient-to-r from-amber-500 via-orange-600 to-rose-500 bg-clip-text text-transparent animate-in fade-in slide-in-from-top-4 duration-1000">
+        <h1 className="font-display text-5xl lg:text-6xl mb-6 text-slate-950 dark:text-white animate-in fade-in slide-in-from-top-4 duration-1000">
           Certificates & Achievements
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-top-4 duration-700 delay-200">
-          Certifications and achievements earned throughout my learning journey
+          Credentials from the tools, platforms, and systems I have taken seriously enough to study.
         </p>
       </div>
 

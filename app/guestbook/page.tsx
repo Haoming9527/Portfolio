@@ -49,13 +49,12 @@ export default function GuestbookPage() {
     <AuthProvider>
       <section className="max-w-4xl w-full px-4 md:px-8 mx-auto py-8">
         <div className="text-center mb-8 relative">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-24 bg-rose-500/10 dark:bg-rose-500/5 blur-[80px] -z-10 rounded-full" />
-          <h1 className="text-4xl font-bold lg:text-5xl mb-4 bg-gradient-to-r from-rose-500 via-pink-600 to-orange-500 bg-clip-text text-transparent animate-in fade-in slide-in-from-top-4 duration-1000">
+          <h1 className="font-display text-4xl lg:text-5xl mb-4 text-slate-950 dark:text-white animate-in fade-in slide-in-from-top-4 duration-1000">
             Guestbook
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-in fade-in slide-in-from-top-4 duration-700 delay-200">
-            Leave a message and be part of my journey! Your thoughts and
-            well-wishes mean the world to me.
+            Leave a note, question, or hello. I read these as part of the site,
+            not as a detached contact form.
           </p>
         </div>
 

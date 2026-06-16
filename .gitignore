@@ -45,3 +45,12 @@ next-env.d.ts
 # logs
 /logs
 *.log
+
+#Agent Skill
+.impeccable
+.cursor
+.codex
+.claude
+.gemini
+.kiro
+PRODUCT.md

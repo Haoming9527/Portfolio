@@ -50,7 +50,7 @@ export function HackerName() {
     <h1
       onClick={scramble}
       onDoubleClick={toggleCli}
-      className="text-4xl sm:text-5xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent font-[family-name:var(--font-geist-mono)] cursor-pointer select-none relative z-20"
+      className="text-4xl sm:text-5xl lg:text-5xl font-bold leading-tight text-slate-950 dark:text-white font-display cursor-pointer select-none relative z-20 decoration-slate-950 dark:decoration-white underline-offset-[0.28em] [text-decoration-skip-ink:none] hover:underline"
       style={{ lineHeight: "1.4" }}
     >
       {text}

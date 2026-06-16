@@ -29,15 +29,14 @@ export default async function ProjectsPage() {
   return (
     <div className="container mx-auto px-6 py-16">
       <div className="text-center mb-16 relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-violet-500/10 dark:bg-violet-500/5 blur-[80px] -z-10 rounded-full" />
-        <h1 className="text-5xl font-bold lg:text-6xl mb-6 bg-gradient-to-r from-blue-600 via-violet-600 to-fuchsia-500 bg-clip-text text-transparent animate-in fade-in slide-in-from-top-6 duration-1000 ease-out" style={{
+        <h1 className="font-display text-5xl lg:text-6xl mb-6 text-slate-950 dark:text-white animate-in fade-in slide-in-from-top-6 duration-1000 ease-out" style={{
           lineHeight: '1.4',
           letterSpacing: '-0.02em'
         }}>
           Featured Projects
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-top-4 duration-700 delay-200">
-          Explore my latest work showcasing innovative solutions and creative problem-solving
+          Selected builds across web applications, AI workflows, and interactive systems.
         </p>
       </div>
       
@@ -46,18 +45,18 @@ export default async function ProjectsPage() {
           <a
             href={item.link}
             key={item._id}
-            className="group block bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-800"
+            className="group block bg-white dark:bg-gray-900 rounded-xl p-6 transition-colors duration-300 border border-gray-200 dark:border-gray-800 hover:border-primary/40 dark:hover:border-primary/50"
             target="_blank"
           >
-            <div className="aspect-[2/1] overflow-hidden rounded-2xl relative mb-6">
+            <div className="aspect-[2/1] overflow-hidden rounded-lg relative mb-6 bg-slate-100 dark:bg-slate-800">
               <Image
                 src={item.imageUrl}
                 alt={item.title || "Project Image"}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-2xl"
+                className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-lg"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+              <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>
             
             <div className="space-y-4">
@@ -70,7 +69,7 @@ export default async function ProjectsPage() {
               <div className="flex flex-wrap gap-2 pt-2">
                 {item.tags.map((tagItem, index) => (
                   <span
-                    className="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/30 px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                    className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
                     key={index}
                   >
                     {tagItem}
@@ -84,4 +83,3 @@ export default async function ProjectsPage() {
     </div>
   );
 }
-
